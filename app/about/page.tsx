@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -45,8 +46,15 @@ export default function AboutPage() {
     <div className="max-w-4xl mx-auto px-6 py-14">
       {/* Hero */}
       <div className="flex flex-col md:flex-row items-center gap-10 mb-16">
-        <div className="w-36 h-36 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white text-6xl font-extrabold shadow-xl flex-shrink-0">
-          C
+        <div className="w-36 h-36 rounded-full overflow-hidden shadow-xl flex-shrink-0 ring-4 ring-indigo-200">
+          <Image
+            src="/charlie.jpg"
+            alt="Charles Agboh"
+            width={144}
+            height={144}
+            className="w-full h-full object-cover"
+            priority
+          />
         </div>
         <div>
           <h1 className="text-4xl font-extrabold text-slate-900 mb-2">

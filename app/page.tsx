@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getAllPosts } from "@/lib/posts";
 import { format } from "date-fns";
 
@@ -149,8 +150,14 @@ export default function HomePage() {
       <section className="bg-gradient-to-r from-teal-50 to-indigo-50 py-16 px-6">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10">
           {/* Avatar placeholder */}
-          <div className="w-28 h-28 rounded-full bg-gradient-to-br from-indigo-400 to-pink-400 flex items-center justify-center text-white text-5xl font-bold shadow-lg flex-shrink-0">
-            C
+          <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg flex-shrink-0 ring-4 ring-indigo-200">
+            <Image
+              src="/charlie.jpg"
+              alt="Charles Agboh"
+              width={112}
+              height={112}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="flex-1 text-center md:text-left">
             <h2 className="text-2xl font-bold text-slate-900 mb-2">
