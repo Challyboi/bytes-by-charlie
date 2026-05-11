@@ -9,8 +9,8 @@ export const metadata: Metadata = {
     template: "%s | Bytes by Charlie",
   },
   description:
-    "A tech blog by Charles Agboh — exploring code, tools, and the things that make developers tick.",
-  keywords: ["tech", "programming", "web development", "javascript", "blog"],
+    "Tech insights, AI automation, and developer tools — written by Charles Agboh.",
+  keywords: ["tech", "AI", "automation", "n8n", "Claude Code", "web development", "blog"],
   authors: [{ name: "Charles Agboh" }],
   openGraph: {
     type: "website",
@@ -26,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col">
+      <body className="min-h-screen flex flex-col bg-white text-slate-900">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
