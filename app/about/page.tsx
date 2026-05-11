@@ -127,7 +127,7 @@ export default function AboutPage() {
 
             {/* Role badges */}
             <div className="flex flex-wrap gap-2 mt-5">
-              {["Email Marketing", "Klaviyo Expert", "VA", "Automation Builder", "First Class Graduate"].map((b) => (
+              {["Email Marketing", "Klaviyo Expert", "VA", "Automation Builder", "Open to Opportunities"].map((b) => (
                 <span key={b} className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-slate-300">
                   {b}
                 </span>
@@ -158,8 +158,7 @@ export default function AboutPage() {
           </h2>
           <div className="bg-gradient-to-br from-slate-50 to-indigo-50/50 border border-slate-100 rounded-2xl p-8 space-y-5 text-slate-600 leading-relaxed text-lg">
             <p>
-              I graduated from the <span className="font-bold text-slate-800">Federal University of Technology, Akure (FUTA)</span> with
-              a First Class Honours in Microbiology (GPA: 4.69/5.00). Not the typical path into tech - but it gave me something
+              I studied at the <span className="font-bold text-slate-800">Federal University of Technology, Akure (FUTA)</span>, graduating in Microbiology. Not the typical path into tech - but it gave me something
               most people underestimate: the discipline to learn anything from scratch and the analytical mindset to actually understand it.
             </p>
             <p>
@@ -213,30 +212,6 @@ export default function AboutPage() {
                 </ul>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* Education */}
-        <section>
-          <h2 className="text-2xl font-extrabold text-slate-900 mb-6 flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-lg">🎓</span>
-            Education
-          </h2>
-          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h3 className="font-extrabold text-slate-900 text-xl mb-1">
-                B.Sc. Microbiology
-              </h3>
-              <p className="text-indigo-600 font-semibold">Federal University of Technology, Akure (FUTA)</p>
-              <p className="text-slate-500 text-sm mt-1">2018 - 2024 · Akure, Nigeria</p>
-            </div>
-            <div className="flex flex-col items-center bg-white border border-indigo-200 rounded-2xl px-6 py-4 shadow-sm text-center">
-              <span className="text-3xl font-extrabold gradient-text">4.69</span>
-              <span className="text-slate-500 text-xs font-medium">GPA / 5.00</span>
-              <span className="mt-2 text-xs font-extrabold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
-                First Class Honours
-              </span>
-            </div>
           </div>
         </section>
 

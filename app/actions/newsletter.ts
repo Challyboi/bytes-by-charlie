@@ -7,44 +7,41 @@ export async function subscribeToNewsletter(
     return { success: false, error: "Please enter a valid email address." };
   }
 
-  const apiKey = process.env.MAILCHIMP_API_KEY;
-  const listId = process.env.MAILCHIMP_LIST_ID;
-  const dc = process.env.MAILCHIMP_DC; // e.g. "us1", "us21"
+  const apiKey = process.env.MAILERLITE_API_KEY;
+  const groupId = process.env.MAILERLITE_GROUP_ID;
 
   // If env vars aren't set yet, return a friendly message
-  if (!apiKey || !listId || !dc) {
+  if (!apiKey || !groupId) {
     return {
       success: false,
-      error: "Newsletter isn't connected yet  -  check back soon!",
+      error: "Newsletter isn't connected yet - check back soon!",
     };
   }
 
   try {
-    const res = await fetch(
-      `https://${dc}.api.mailchimp.com/3.0/lists/${listId}/members`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${Buffer.from(`anystring:${apiKey}`).toString("base64")}`,
-        },
-        body: JSON.stringify({
-          email_address: email,
-          status: "subscribed",
-        }),
-      }
-    );
+    const res = await fetch("https://connect.mailerlite.com/api/subscribers", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        email,
+        groups: [groupId],
+      }),
+    });
 
     const data = await res.json().catch(() => ({}));
 
-    // 400 with "Member Exists" title means already subscribed  -  treat as success
     if (!res.ok) {
-      if (data?.title === "Member Exists") {
+      // 409 = subscriber already exists - treat as success
+      if (res.status === 409) {
         return { success: true };
       }
       return {
         success: false,
-        error: data?.detail || "Something went wrong. Please try again.",
+        error: data?.message || "Something went wrong. Please try again.",
       };
     }
 

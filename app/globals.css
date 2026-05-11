@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "@fontsource-variable/plus-jakarta-sans";
 
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
@@ -22,10 +25,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  color-scheme: dark;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: #f8fafc; }
 ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 9999px; }
+
+html.dark ::-webkit-scrollbar-track { background: #1e293b; }
 
 /* Gradient text */
 .gradient-text {
