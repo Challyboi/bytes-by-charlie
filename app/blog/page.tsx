@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/posts";
 import { format } from "date-fns";
+import NewsletterSignup from "@/components/NewsletterSignup";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -91,6 +92,11 @@ export default function BlogPage() {
           ))}
         </div>
       )}
+
+      {/* Newsletter */}
+      <div className="mt-16 -mx-6">
+        <NewsletterSignup />
+      </div>
     </div>
   );
 }

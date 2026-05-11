@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import NewsletterSignup from "@/components/NewsletterSignup";
 import { getAllPosts } from "@/lib/posts";
 import { format } from "date-fns";
 
@@ -145,6 +146,9 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* Newsletter */}
+      <NewsletterSignup />
 
       {/* About teaser */}
       <section className="bg-gradient-to-r from-teal-50 to-indigo-50 py-16 px-6">
