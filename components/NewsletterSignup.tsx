@@ -43,7 +43,7 @@ export default function NewsletterSignup({
           </h3>
         </div>
         <p className="text-slate-500 mb-5 text-sm leading-relaxed">
-          Subscribe to get new posts straight to your inbox — no spam, just
+          Subscribe to get new posts straight to your inbox  -  no spam, just
           bytes.
         </p>
         {status === "success" ? (
@@ -86,7 +86,7 @@ export default function NewsletterSignup({
         </h2>
         <p className="text-indigo-100 mb-8 text-lg leading-relaxed">
           Get new posts on AI, automation, and dev tools delivered straight to
-          your inbox. No spam — just bytes worth reading.
+          your inbox. No spam  -  just bytes worth reading.
         </p>
 
         {status === "success" ? (

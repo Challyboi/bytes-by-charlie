@@ -6,7 +6,7 @@ import NewsletterSignup from "@/components/NewsletterSignup";
 
 export const metadata: Metadata = {
   title: "Blog",
-  description: "All posts from Bytes by Charlie — tech articles and tutorials.",
+  description: "All posts from Bytes by Charlie  -  tech articles and tutorials.",
 };
 
 const TAG_COLORS: Record<string, string> = {
@@ -57,7 +57,7 @@ export default function BlogPage() {
         {posts.length === 0 ? (
           <div className="text-center py-24 text-slate-400">
             <p className="text-6xl mb-5">📝</p>
-            <p className="text-xl font-medium">No posts yet — check back soon!</p>
+            <p className="text-xl font-medium">No posts yet  -  check back soon!</p>
           </div>
         ) : (
           <div className="space-y-5">

@@ -6,7 +6,7 @@ tags: ["typescript", "javascript", "beginners"]
 coverColor: "#3b82f6"
 ---
 
-If you've been writing JavaScript for a while, you've probably heard about TypeScript. Everyone seems to love it — and for good reason. But if you've never touched it, it can feel like there's a whole mountain to climb before you write a single line.
+If you've been writing JavaScript for a while, you've probably heard about TypeScript. Everyone seems to love it  -  and for good reason. But if you've never touched it, it can feel like there's a whole mountain to climb before you write a single line.
 
 Good news: there isn't. Let's break it down.
 
@@ -34,7 +34,7 @@ function getFullName(user) {
 }
 ```
 
-Looks fine. But what if someone passes in the wrong thing? In plain JavaScript, you'd only find out at runtime — which might be in production, when a real user hits a bug.
+Looks fine. But what if someone passes in the wrong thing? In plain JavaScript, you'd only find out at runtime  -  which might be in production, when a real user hits a bug.
 
 With TypeScript:
 
@@ -60,7 +60,7 @@ npm install -D typescript
 npx tsc --init
 ```
 
-The second command creates a `tsconfig.json` file — TypeScript's config file. You can tweak it later, but the defaults are fine to start.
+The second command creates a `tsconfig.json` file  -  TypeScript's config file. You can tweak it later, but the defaults are fine to start.
 
 Then just rename your `.js` files to `.ts` and start adding types where it makes sense.
 
@@ -68,11 +68,11 @@ Then just rename your `.js` files to `.ts` and start adding types where it makes
 
 Here are the types you'll reach for constantly:
 
-- `string` — text
-- `number` — any number (integers and floats)
-- `boolean` — true or false
-- `string[]` — array of strings
-- `any` — escape hatch (use sparingly!)
+- `string`  -  text
+- `number`  -  any number (integers and floats)
+- `boolean`  -  true or false
+- `string[]`  -  array of strings
+- `any`  -  escape hatch (use sparingly!)
 
 ```ts
 let age: number = 25;
@@ -82,7 +82,7 @@ let hobbies: string[] = ["coding", "reading", "coffee"];
 
 ## Don't Stress About Perfecting It
 
-One trap beginners fall into: trying to type **everything** perfectly from day one. Don't. TypeScript has type inference — it can figure out many types on its own:
+One trap beginners fall into: trying to type **everything** perfectly from day one. Don't. TypeScript has type inference  -  it can figure out many types on its own:
 
 ```ts
 let count = 0; // TypeScript knows this is a number!
@@ -92,6 +92,6 @@ Start simple. Add types where they matter most (function parameters and return v
 
 ## Wrapping Up
 
-TypeScript isn't scary — it's just JavaScript with guardrails. And those guardrails will save you hours of debugging in the long run. Start with one file, get comfortable, and slowly expand.
+TypeScript isn't scary  -  it's just JavaScript with guardrails. And those guardrails will save you hours of debugging in the long run. Start with one file, get comfortable, and slowly expand.
 
 You've got this. 💪

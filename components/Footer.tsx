@@ -17,7 +17,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm leading-relaxed text-slate-500 max-w-xs">
-              Tech insights, AI automation, and developer tools — written by Charles Agboh for developers who want to build smarter.
+              Tech insights, AI automation, and developer tools  -  written by Charles Agboh for developers who want to build smarter.
             </p>
           </div>
 

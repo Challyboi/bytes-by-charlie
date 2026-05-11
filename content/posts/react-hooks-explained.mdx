@@ -1,18 +1,18 @@
 ---
-title: "React Hooks Explained — No Jargon, Just Code"
+title: "React Hooks Explained  -  No Jargon, Just Code"
 date: "2025-05-06"
-description: "useState, useEffect, useRef — React hooks are everywhere. Let's demystify them with plain language and real examples."
+description: "useState, useEffect, useRef  -  React hooks are everywhere. Let's demystify them with plain language and real examples."
 tags: ["react", "javascript", "frontend"]
 coverColor: "#06b6d4"
 ---
 
-When React hooks landed in version 16.8, they changed everything. No more class components just to manage a bit of state. No more lifecycle method gymnastics. Hooks let you do all of that — and more — in simple, readable functions.
+When React hooks landed in version 16.8, they changed everything. No more class components just to manage a bit of state. No more lifecycle method gymnastics. Hooks let you do all of that  -  and more  -  in simple, readable functions.
 
 But if you're new to them, it can feel like there's a lot going on. Let's cut through the noise.
 
 ## The Big Three
 
-### 1. `useState` — Managing State
+### 1. `useState`  -  Managing State
 
 State is data that, when it changes, causes your component to re-render. `useState` is how you create it.
 
@@ -32,14 +32,14 @@ function Counter() {
 ```
 
 `useState(0)` gives you two things:
-- `count` — the current value
-- `setCount` — a function to update it
+- `count`  -  the current value
+- `setCount`  -  a function to update it
 
 Every time you call `setCount`, React re-renders the component with the new value. Simple.
 
-### 2. `useEffect` — Side Effects
+### 2. `useEffect`  -  Side Effects
 
-Side effects are things that happen *outside* of rendering — fetching data, setting up timers, updating the document title, etc.
+Side effects are things that happen *outside* of rendering  -  fetching data, setting up timers, updating the document title, etc.
 
 ```tsx
 import { useState, useEffect } from "react";
@@ -60,9 +60,9 @@ function UserProfile({ userId }: { userId: string }) {
 
 The second argument (`[userId]`) is the **dependency array**. The effect re-runs whenever any value in that array changes.
 
-> **Watch out:** passing an empty array `[]` means the effect runs once (on mount). Leaving it out means it runs after *every* render — usually not what you want.
+> **Watch out:** passing an empty array `[]` means the effect runs once (on mount). Leaving it out means it runs after *every* render  -  usually not what you want.
 
-### 3. `useRef` — Persistent Values Without Re-renders
+### 3. `useRef`  -  Persistent Values Without Re-renders
 
 `useRef` gives you a mutable box that persists across renders but doesn't *cause* re-renders when changed. Classic use case: DOM references.
 
@@ -83,9 +83,9 @@ function FocusInput() {
 
 ## A Few Golden Rules
 
-1. **Only call hooks at the top level** — never inside `if` statements or loops
-2. **Only call hooks from React functions** — not regular JS functions
-3. **Name your custom hooks starting with `use`** — so React can recognise them
+1. **Only call hooks at the top level**  -  never inside `if` statements or loops
+2. **Only call hooks from React functions**  -  not regular JS functions
+3. **Name your custom hooks starting with `use`**  -  so React can recognise them
 
 ## Building a Custom Hook
 
@@ -109,7 +109,7 @@ function useLocalStorage(key: string, initialValue: string) {
 const [theme, setTheme] = useLocalStorage("theme", "light");
 ```
 
-Now you have a reusable piece of logic that any component can use. That's the real power of hooks — sharing logic without sharing UI.
+Now you have a reusable piece of logic that any component can use. That's the real power of hooks  -  sharing logic without sharing UI.
 
 ## You've Got the Foundation
 

@@ -1,12 +1,12 @@
 ---
 title: "Git Commands Every Developer Should Know"
 date: "2025-05-10"
-description: "Beyond git add and git commit — these are the Git commands that will save your code and your sanity."
+description: "Beyond git add and git commit  -  these are the Git commands that will save your code and your sanity."
 tags: ["git", "tools", "career"]
 coverColor: "#f43f5e"
 ---
 
-Most developers learn `git add`, `git commit`, and `git push` — and then stop there. That's fine for getting started, but the moment you're working on a team or dealing with a tricky bug, you'll wish you knew more.
+Most developers learn `git add`, `git commit`, and `git push`  -  and then stop there. That's fine for getting started, but the moment you're working on a team or dealing with a tricky bug, you'll wish you knew more.
 
 Here are the Git commands I reach for all the time.
 
@@ -23,7 +23,7 @@ git pull          # Pull from remote
 
 Cool. Now let's go deeper.
 
-## `git log` — Your Time Machine
+## `git log`  -  Your Time Machine
 
 The default `git log` output is a wall of text. Make it readable:
 
@@ -33,7 +33,7 @@ git log --oneline --graph --decorate
 
 This gives you a compact, visual view of your commit history with branch info. I alias this to `git lg` in my config.
 
-## `git stash` — Save Your Work Without Committing
+## `git stash`  -  Save Your Work Without Committing
 
 You're mid-feature when suddenly you need to fix an urgent bug on another branch. Don't commit half-finished work. Stash it:
 
@@ -45,7 +45,7 @@ git stash list   # See all your stashes
 
 It's like putting your work on a shelf. You switch branches, fix the bug, come back, and pop your changes back.
 
-## `git diff` — See Exactly What Changed
+## `git diff`  -  See Exactly What Changed
 
 Before committing, review what you're actually sending:
 
@@ -57,7 +57,7 @@ git diff main..dev  # Compare two branches
 
 This is one of those commands that saves you from "oh no, I committed that?" moments.
 
-## `git reset` — Undo Things
+## `git reset`  -  Undo Things
 
 Made a bad commit? There's a way back.
 
@@ -74,7 +74,7 @@ git reset --hard HEAD~1
 
 > **Warning:** `--hard` deletes your changes permanently. Use with caution on work you haven't pushed.
 
-## `git rebase` — Clean Up Messy History
+## `git rebase`  -  Clean Up Messy History
 
 If you have 5 tiny "fix typo" commits before a PR, you can squash them into one clean commit:
 
@@ -84,9 +84,9 @@ git rebase -i HEAD~5
 
 An editor opens. Mark the commits you want to squash with `squash` (or just `s`). Git combines them. Your history looks intentional instead of chaotic.
 
-## `git cherry-pick` — Grab Just One Commit
+## `git cherry-pick`  -  Grab Just One Commit
 
-Say your colleague made one specific fix on their branch and you need *just that commit* — not their whole branch:
+Say your colleague made one specific fix on their branch and you need *just that commit*  -  not their whole branch:
 
 ```bash
 git cherry-pick <commit-hash>
@@ -94,7 +94,7 @@ git cherry-pick <commit-hash>
 
 Get the hash from `git log`, run this, and that commit is now applied to your current branch. 🍒
 
-## `git bisect` — Find the Bug-Introducing Commit
+## `git bisect`  -  Find the Bug-Introducing Commit
 
 This one's a superpower. You know your code worked on version A but is broken on version C. Which commit broke it?
 
@@ -145,4 +145,4 @@ Your future self (and your teammates) will thank you.
 
 ---
 
-Git is one of those tools that rewards patience and learning. The more you know, the more confident you'll feel when things go sideways — and things *will* go sideways. Now you're ready. 🔀
+Git is one of those tools that rewards patience and learning. The more you know, the more confident you'll feel when things go sideways  -  and things *will* go sideways. Now you're ready. 🔀

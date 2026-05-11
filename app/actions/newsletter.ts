@@ -15,7 +15,7 @@ export async function subscribeToNewsletter(
   if (!apiKey || !listId || !dc) {
     return {
       success: false,
-      error: "Newsletter isn't connected yet — check back soon!",
+      error: "Newsletter isn't connected yet  -  check back soon!",
     };
   }
 
@@ -37,7 +37,7 @@ export async function subscribeToNewsletter(
 
     const data = await res.json().catch(() => ({}));
 
-    // 400 with "Member Exists" title means already subscribed — treat as success
+    // 400 with "Member Exists" title means already subscribed  -  treat as success
     if (!res.ok) {
       if (data?.title === "Member Exists") {
         return { success: true };

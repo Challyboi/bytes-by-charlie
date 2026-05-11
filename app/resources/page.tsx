@@ -12,10 +12,10 @@ const sections = [
     icon: "🤖",
     color: "from-violet-500 to-purple-600",
     items: [
-      { name: "Claude Code", desc: "Anthropic's AI coding agent — terminal-native and incredibly powerful.", href: "https://claude.ai/code", badge: "🔥 Recommended" },
+      { name: "Claude Code", desc: "Anthropic's AI coding agent  -  terminal-native and incredibly powerful.", href: "https://claude.ai/code", badge: "🔥 Recommended" },
       { name: "n8n", desc: "Open-source workflow automation. Visual, powerful, and endlessly flexible.", href: "https://n8n.io", badge: "⭐ Essential" },
       { name: "Anthropic API", desc: "Build your own AI-powered apps using Claude models.", href: "https://anthropic.com", badge: null },
-      { name: "Make (Integromat)", desc: "A powerful visual automation platform — great for no-code flows.", href: "https://make.com", badge: null },
+      { name: "Make (Integromat)", desc: "A powerful visual automation platform  -  great for no-code flows.", href: "https://make.com", badge: null },
     ],
   },
   {
@@ -85,7 +85,7 @@ export default function ResourcesPage() {
             Developer <span className="gradient-text">Resources</span>
           </h1>
           <p className="text-slate-400 text-lg max-w-xl leading-relaxed">
-            Tools, platforms, and learning resources I personally use and recommend. No fluff — only the good stuff.
+            Tools, platforms, and learning resources I personally use and recommend. No fluff  -  only the good stuff.
           </p>
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function ResourcesPage() {
         <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-8 text-center">
           <h3 className="text-xl font-extrabold text-slate-900 mb-2">Know a great resource?</h3>
           <p className="text-slate-500 mb-5 text-sm">
-            This list grows over time. If you have a tool or resource you love, reach out — I&apos;d love to check it out.
+            This list grows over time. If you have a tool or resource you love, reach out  -  I&apos;d love to check it out.
           </p>
           <Link href="/about" className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl text-sm transition-colors">
             Get in touch →

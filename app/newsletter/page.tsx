@@ -3,7 +3,7 @@ import NewsletterSignup from "@/components/NewsletterSignup";
 
 export const metadata: Metadata = {
   title: "Newsletter",
-  description: "Subscribe to Bytes by Charlie — tech, AI automation, and dev insights in your inbox.",
+  description: "Subscribe to Bytes by Charlie  -  tech, AI automation, and dev insights in your inbox.",
 };
 
 const perks = [
@@ -34,7 +34,7 @@ export default function NewsletterPage() {
             <span className="gradient-text">reading.</span>
           </h1>
           <p className="text-slate-400 text-xl leading-relaxed max-w-xl mx-auto">
-            Join developers getting weekly insights on AI, automation, and modern web development — straight to their inbox.
+            Join developers getting weekly insights on AI, automation, and modern web development  -  straight to their inbox.
           </p>
         </div>
       </div>
@@ -67,7 +67,7 @@ export default function NewsletterPage() {
           </div>
           <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
             <span>🔒</span>
-            <span>Your email stays private — never shared or sold.</span>
+            <span>Your email stays private  -  never shared or sold.</span>
           </div>
         </div>
       </div>

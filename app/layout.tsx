@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | Bytes by Charlie",
   },
   description:
-    "Tech insights, AI automation, and developer tools — written by Charles Agboh.",
+    "Tech insights, AI automation, and developer tools  -  written by Charles Agboh.",
   keywords: ["tech", "AI", "automation", "n8n", "Claude Code", "web development", "blog"],
   authors: [{ name: "Charles Agboh" }],
   openGraph: {

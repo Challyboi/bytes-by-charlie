@@ -54,7 +54,7 @@ export default function HomePage() {
           style={{ background: "radial-gradient(circle, #ec4899, transparent)" }} />
 
         <div className="relative max-w-6xl mx-auto px-6 pt-24 pb-28 flex flex-col lg:flex-row items-center gap-14">
-          {/* Left — text */}
+          {/* Left  -  text */}
           <div className="flex-1 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/10 backdrop-blur-sm text-sm px-4 py-1.5 rounded-full mb-7 text-slate-300">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -68,7 +68,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-slate-400 text-lg md:text-xl max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed">
-              AI automation, dev tools, and coding deep-dives — written for
+              AI automation, dev tools, and coding deep-dives  -  written for
               developers who want to build smarter and move faster. By{" "}
               <span className="text-white font-semibold">Charles Agboh</span>.
             </p>
@@ -107,7 +107,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right — terminal card */}
+          {/* Right  -  terminal card */}
           <div className="flex-shrink-0 w-full max-w-sm lg:max-w-md">
             <div className="bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl">
               {/* Terminal bar */}
@@ -184,7 +184,7 @@ export default function HomePage() {
           {featured.length === 0 ? (
             <div className="text-center py-16 text-slate-400">
               <p className="text-5xl mb-4">📝</p>
-              <p>Posts coming soon — stay tuned!</p>
+              <p>Posts coming soon  -  stay tuned!</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-3 gap-6">
@@ -228,7 +228,7 @@ export default function HomePage() {
               Written by <span className="gradient-text">Charles Agboh</span>
             </h2>
             <p className="text-slate-600 leading-relaxed mb-4 max-w-xl">
-              Developer, learner, and automation enthusiast. I write about the tools and ideas that are reshaping how we build — from AI agents to n8n workflows to modern web dev.
+              Developer, learner, and automation enthusiast. I write about the tools and ideas that are reshaping how we build  -  from AI agents to n8n workflows to modern web dev.
             </p>
             <Link href="/about" className="inline-flex items-center gap-1 text-indigo-600 font-semibold text-sm hover:underline">
               Read my story →
