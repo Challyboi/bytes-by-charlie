@@ -1,0 +1,148 @@
+---
+title: "Git Commands Every Developer Should Know"
+date: "2025-05-10"
+description: "Beyond git add and git commit — these are the Git commands that will save your code and your sanity."
+tags: ["git", "tools", "career"]
+coverColor: "#f43f5e"
+---
+
+Most developers learn `git add`, `git commit`, and `git push` — and then stop there. That's fine for getting started, but the moment you're working on a team or dealing with a tricky bug, you'll wish you knew more.
+
+Here are the Git commands I reach for all the time.
+
+## The Basics (You Probably Know These)
+
+```bash
+git init          # Start a new repo
+git clone <url>   # Copy a remote repo locally
+git add .         # Stage all changes
+git commit -m ""  # Commit with a message
+git push          # Push to remote
+git pull          # Pull from remote
+```
+
+Cool. Now let's go deeper.
+
+## `git log` — Your Time Machine
+
+The default `git log` output is a wall of text. Make it readable:
+
+```bash
+git log --oneline --graph --decorate
+```
+
+This gives you a compact, visual view of your commit history with branch info. I alias this to `git lg` in my config.
+
+## `git stash` — Save Your Work Without Committing
+
+You're mid-feature when suddenly you need to fix an urgent bug on another branch. Don't commit half-finished work. Stash it:
+
+```bash
+git stash        # Save your current changes
+git stash pop    # Bring them back later
+git stash list   # See all your stashes
+```
+
+It's like putting your work on a shelf. You switch branches, fix the bug, come back, and pop your changes back.
+
+## `git diff` — See Exactly What Changed
+
+Before committing, review what you're actually sending:
+
+```bash
+git diff            # Changes not yet staged
+git diff --staged   # Changes that are staged
+git diff main..dev  # Compare two branches
+```
+
+This is one of those commands that saves you from "oh no, I committed that?" moments.
+
+## `git reset` — Undo Things
+
+Made a bad commit? There's a way back.
+
+```bash
+# Undo last commit, keep changes in working directory
+git reset --soft HEAD~1
+
+# Undo last commit, unstage changes but keep files
+git reset HEAD~1
+
+# ⚠️ Nuclear option: undo commit AND discard changes
+git reset --hard HEAD~1
+```
+
+> **Warning:** `--hard` deletes your changes permanently. Use with caution on work you haven't pushed.
+
+## `git rebase` — Clean Up Messy History
+
+If you have 5 tiny "fix typo" commits before a PR, you can squash them into one clean commit:
+
+```bash
+git rebase -i HEAD~5
+```
+
+An editor opens. Mark the commits you want to squash with `squash` (or just `s`). Git combines them. Your history looks intentional instead of chaotic.
+
+## `git cherry-pick` — Grab Just One Commit
+
+Say your colleague made one specific fix on their branch and you need *just that commit* — not their whole branch:
+
+```bash
+git cherry-pick <commit-hash>
+```
+
+Get the hash from `git log`, run this, and that commit is now applied to your current branch. 🍒
+
+## `git bisect` — Find the Bug-Introducing Commit
+
+This one's a superpower. You know your code worked on version A but is broken on version C. Which commit broke it?
+
+```bash
+git bisect start
+git bisect bad          # Current commit is broken
+git bisect good v1.0    # This tag was working
+
+# Git checks out a commit in the middle
+# Test it. If broken:
+git bisect bad
+# If working:
+git bisect good
+
+# Repeat until Git tells you the exact commit that introduced the bug
+git bisect reset        # When done
+```
+
+Git uses binary search to find the culprit in just a few steps. Mind-blowing the first time you use it.
+
+## Set Up a Good `.gitignore`
+
+Don't forget to tell Git what to ignore:
+
+```
+node_modules/
+.env
+.DS_Store
+dist/
+*.log
+```
+
+Create this in your project root. GitHub has a great collection of templates at [gitignore.io](https://gitignore.io).
+
+## One More Tip: Write Good Commit Messages
+
+```
+❌ "fix stuff"
+❌ "wip"
+❌ "asdfgh"
+
+✅ "fix: resolve null pointer in user auth flow"
+✅ "feat: add dark mode toggle to settings page"
+✅ "refactor: extract validation logic into utils"
+```
+
+Your future self (and your teammates) will thank you.
+
+---
+
+Git is one of those tools that rewards patience and learning. The more you know, the more confident you'll feel when things go sideways — and things *will* go sideways. Now you're ready. 🔀

@@ -1,0 +1,97 @@
+---
+title: "Getting Started with TypeScript: A Beginner's Guide"
+date: "2025-05-01"
+description: "TypeScript can feel intimidating at first, but once it clicks, you'll never want to go back. Here's your no-fluff intro."
+tags: ["typescript", "javascript", "beginners"]
+coverColor: "#3b82f6"
+---
+
+If you've been writing JavaScript for a while, you've probably heard about TypeScript. Everyone seems to love it — and for good reason. But if you've never touched it, it can feel like there's a whole mountain to climb before you write a single line.
+
+Good news: there isn't. Let's break it down.
+
+## What Even Is TypeScript?
+
+TypeScript is JavaScript with **types**. That's really it. It's a superset of JavaScript, which means any valid JavaScript code is also valid TypeScript. The difference is you can optionally tell TypeScript what *kind* of data your variables hold.
+
+```ts
+// JavaScript
+let username = "Charlie";
+
+// TypeScript
+let username: string = "Charlie";
+```
+
+The second version tells TypeScript: "this variable will always be a string." If you ever try to assign a number to it later, TypeScript will warn you before your code even runs.
+
+## Why Should You Care?
+
+Here's a real scenario. You've got a function that takes a user object and returns their full name:
+
+```ts
+function getFullName(user) {
+  return user.firstName + " " + user.lastName;
+}
+```
+
+Looks fine. But what if someone passes in the wrong thing? In plain JavaScript, you'd only find out at runtime — which might be in production, when a real user hits a bug.
+
+With TypeScript:
+
+```ts
+interface User {
+  firstName: string;
+  lastName: string;
+}
+
+function getFullName(user: User): string {
+  return user.firstName + " " + user.lastName;
+}
+```
+
+Now TypeScript knows exactly what shape `user` should be. Pass in something wrong and you'll see a red squiggly line in your editor *before* you ever run the code.
+
+## Setting It Up
+
+Getting started is surprisingly painless:
+
+```bash
+npm install -D typescript
+npx tsc --init
+```
+
+The second command creates a `tsconfig.json` file — TypeScript's config file. You can tweak it later, but the defaults are fine to start.
+
+Then just rename your `.js` files to `.ts` and start adding types where it makes sense.
+
+## The Types You'll Use Most
+
+Here are the types you'll reach for constantly:
+
+- `string` — text
+- `number` — any number (integers and floats)
+- `boolean` — true or false
+- `string[]` — array of strings
+- `any` — escape hatch (use sparingly!)
+
+```ts
+let age: number = 25;
+let isLoggedIn: boolean = true;
+let hobbies: string[] = ["coding", "reading", "coffee"];
+```
+
+## Don't Stress About Perfecting It
+
+One trap beginners fall into: trying to type **everything** perfectly from day one. Don't. TypeScript has type inference — it can figure out many types on its own:
+
+```ts
+let count = 0; // TypeScript knows this is a number!
+```
+
+Start simple. Add types where they matter most (function parameters and return values). The rest will come naturally.
+
+## Wrapping Up
+
+TypeScript isn't scary — it's just JavaScript with guardrails. And those guardrails will save you hours of debugging in the long run. Start with one file, get comfortable, and slowly expand.
+
+You've got this. 💪
