@@ -7,11 +7,12 @@ export async function subscribeToNewsletter(
     return { success: false, error: "Please enter a valid email address." };
   }
 
-  const publicationId = process.env.BEEHIIV_PUBLICATION_ID;
-  const apiKey = process.env.BEEHIIV_API_KEY;
+  const apiKey = process.env.MAILCHIMP_API_KEY;
+  const listId = process.env.MAILCHIMP_LIST_ID;
+  const dc = process.env.MAILCHIMP_DC; // e.g. "us1", "us21"
 
   // If env vars aren't set yet, return a friendly message
-  if (!publicationId || !apiKey) {
+  if (!apiKey || !listId || !dc) {
     return {
       success: false,
       error: "Newsletter isn't connected yet — check back soon!",
@@ -20,26 +21,30 @@ export async function subscribeToNewsletter(
 
   try {
     const res = await fetch(
-      `https://api.beehiiv.com/v2/publications/${publicationId}/subscriptions`,
+      `https://${dc}.api.mailchimp.com/3.0/lists/${listId}/members`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Basic ${Buffer.from(`anystring:${apiKey}`).toString("base64")}`,
         },
         body: JSON.stringify({
-          email,
-          reactivate_existing: false,
-          send_welcome_email: true,
+          email_address: email,
+          status: "subscribed",
         }),
       }
     );
 
+    const data = await res.json().catch(() => ({}));
+
+    // 400 with "Member Exists" title means already subscribed — treat as success
     if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
+      if (data?.title === "Member Exists") {
+        return { success: true };
+      }
       return {
         success: false,
-        error: data?.message || "Something went wrong. Please try again.",
+        error: data?.detail || "Something went wrong. Please try again.",
       };
     }
 
