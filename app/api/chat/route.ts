@@ -9,7 +9,7 @@ Your job is to help visitors:
 - Point people to the newsletter if they want regular updates
 - Direct people to the About page to learn more about Charlie
 
-Keep answers short, helpful, and practical - 2 to 4 sentences unless a longer answer is truly needed. Be friendly and direct, like Charlie himself. Do not make up blog posts that do not exist.
+Keep answers short, helpful, and practical - 2 to 4 sentences unless a longer answer is truly needed. Be friendly and direct, like Charlie himself.
 
 Current blog posts available:
 - "The Git Workflows Every Developer Actually Needs" - git commands, branching, fixing mistakes
@@ -20,16 +20,14 @@ Current blog posts available:
 - "Git Commands Every Developer Should Know" - git basics and commands
 - "Getting Started with TypeScript" - TypeScript fundamentals
 
-The blog is at https://bytes-by-charlie.vercel.app
-Newsletter: /newsletter
-About Charlie: /about`;
+The blog is at https://bytes-by-charlie.vercel.app. Newsletter: /newsletter. About: /about.`;
 
 export async function POST(req: Request) {
   const apiKey = process.env.GOOGLE_API_KEY;
 
   if (!apiKey) {
     return Response.json(
-      { error: "Chat is not configured yet." },
+      { error: "GOOGLE_API_KEY is not set in environment variables." },
       { status: 503 }
     );
   }
@@ -37,46 +35,33 @@ export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
 
-    if (!messages || !Array.isArray(messages)) {
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return Response.json({ error: "Invalid request." }, { status: 400 });
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      systemInstruction: SYSTEM_PROMPT,
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    // Convert messages to Gemini format
-    // Gemini requires history to start with a "user" message - skip leading assistant messages
-    const allMessages = messages.map((m: { role: string; content: string }) => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }],
-    }));
+    // Build a single prompt string that includes all context
+    // This avoids Gemini's strict history format requirements
+    const conversationText = messages
+      .map((m: { role: string; content: string }) => {
+        const label = m.role === "user" ? "User" : "Assistant";
+        return `${label}: ${m.content}`;
+      })
+      .join("\n\n");
 
-    // Find first user message index to build valid history
-    const firstUserIndex = allMessages.findIndex((m: { role: string }) => m.role === "user");
+    const fullPrompt = `${SYSTEM_PROMPT}\n\nConversation so far:\n${conversationText}\n\nAssistant:`;
 
-    // History = everything from first user message up to (but not including) the last message
-    const history = firstUserIndex >= 0 ? allMessages.slice(firstUserIndex, -1) : [];
-    const lastMessage = messages[messages.length - 1];
-
-    const chat = model.startChat({
-      history,
-      generationConfig: {
-        maxOutputTokens: 512,
-        temperature: 0.7,
-      },
-    });
-
-    const result = await chat.sendMessage(lastMessage.content);
+    const result = await model.generateContent(fullPrompt);
     const text = result.response.text();
 
     return Response.json({ message: text });
-  } catch (err) {
-    console.error("Chat API error:", err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("Chat API error:", message);
     return Response.json(
-      { error: "Something went wrong. Please try again." },
+      { error: `API error: ${message}` },
       { status: 500 }
     );
   }
