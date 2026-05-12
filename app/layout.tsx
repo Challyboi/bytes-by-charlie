@@ -3,7 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import ChatWidget from "@/components/ChatWidget";
+import FloatingButtons from "@/components/FloatingButtons";
 
 const SITE_URL = "https://bytes-by-charlie.vercel.app";
 
@@ -81,7 +81,7 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
-          <ChatWidget />
+          <FloatingButtons />
         </ThemeProvider>
       </body>
     </html>
