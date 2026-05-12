@@ -4,18 +4,32 @@ import Script from "next/script";
 
 const WHATSAPP_NUMBER = "2348131505041"; // +234 813 150 5041
 const WHATSAPP_MESSAGE = "Hi Charlie! I found your blog and had a question.";
-const TIDIO_KEY = process.env.NEXT_PUBLIC_TIDIO_KEY ?? "";
+const TAWK_PROPERTY_ID = process.env.NEXT_PUBLIC_TAWK_PROPERTY_ID ?? "";
+const TAWK_WIDGET_ID = process.env.NEXT_PUBLIC_TAWK_WIDGET_ID ?? "default";
 
 export default function FloatingButtons() {
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
   return (
     <>
-      {/* Tidio live chat script */}
-      {TIDIO_KEY && (
+      {/* Tawk.to live chat script */}
+      {TAWK_PROPERTY_ID && (
         <Script
-          src={`//code.tidio.co/${TIDIO_KEY}.js`}
+          id="tawk-to"
           strategy="lazyOnload"
+          dangerouslySetInnerHTML={{
+            __html: `
+              var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+              (function(){
+                var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+                s1.async=true;
+                s1.src='https://embed.tawk.to/${TAWK_PROPERTY_ID}/${TAWK_WIDGET_ID}';
+                s1.charset='UTF-8';
+                s1.setAttribute('crossorigin','*');
+                s0.parentNode.insertBefore(s1,s0);
+              })();
+            `,
+          }}
         />
       )}
 
