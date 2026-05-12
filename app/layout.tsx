@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import FloatingButtons from "@/components/FloatingButtons";
+import ChatWidget from "@/components/ChatWidget";
 
 const SITE_URL = "https://bytes-by-charlie.vercel.app";
 
@@ -82,6 +83,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
           <FloatingButtons />
+          <ChatWidget />
         </ThemeProvider>
       </body>
     </html>

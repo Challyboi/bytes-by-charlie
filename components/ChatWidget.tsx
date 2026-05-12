@@ -29,9 +29,7 @@ export default function ChatWidget() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
+    if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
 
   useEffect(() => {
@@ -61,24 +59,17 @@ export default function ChatWidget() {
       });
 
       const data = await res.json();
-
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content:
-            data.message ||
-            data.error ||
-            "Sorry, something went wrong. Try again.",
+          content: data.message || data.error || "Sorry, something went wrong.",
         },
       ]);
     } catch {
       setMessages((prev) => [
         ...prev,
-        {
-          role: "assistant",
-          content: "Network error. Please try again.",
-        },
+        { role: "assistant", content: "Network error. Please try again." },
       ]);
     } finally {
       setLoading(false);
@@ -94,11 +85,11 @@ export default function ChatWidget() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button - bottom RIGHT */}
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Open chat"
-        className="fixed bottom-6 right-6 z-[100] w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+        aria-label="Open chat assistant"
+        className="fixed bottom-6 right-6 z-[100] w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95"
         style={{
           background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
           boxShadow: "0 8px 32px rgba(99,102,241,0.45)",
@@ -114,8 +105,6 @@ export default function ChatWidget() {
               d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         )}
-
-        {/* Pulse ring */}
         {!open && (
           <span className="absolute inset-0 rounded-full animate-ping opacity-30"
             style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }} />
@@ -124,17 +113,20 @@ export default function ChatWidget() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-[100] w-[350px] max-w-[calc(100vw-2rem)] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden"
-          style={{ height: "480px" }}>
-
+        <div
+          className="fixed bottom-24 right-6 z-[100] w-[350px] max-w-[calc(100vw-3rem)] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden"
+          style={{ height: "480px" }}
+        >
           {/* Header */}
-          <div className="flex items-center gap-3 px-4 py-3.5 flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)" }}>
+          <div
+            className="flex items-center gap-3 px-4 py-3.5 flex-shrink-0"
+            style={{ background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)" }}
+          >
             <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg flex-shrink-0">
               🤖
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-bold text-white text-sm">Charlie's AI Assistant</p>
+              <p className="font-bold text-white text-sm">Charlie&apos;s AI Assistant</p>
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-white/70 text-xs">Online - ask me anything</span>
@@ -184,7 +176,6 @@ export default function ChatWidget() {
               </div>
             )}
 
-            {/* Starter prompts - only show at the start */}
             {messages.length === 1 && !loading && (
               <div className="space-y-2 pt-1">
                 <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Quick questions:</p>
@@ -228,7 +219,7 @@ export default function ChatWidget() {
               </button>
             </div>
             <p className="text-center text-[10px] text-slate-300 dark:text-slate-600 mt-1.5">
-              Powered by Claude AI
+              Powered by Google Gemini - Free AI
             </p>
           </div>
         </div>

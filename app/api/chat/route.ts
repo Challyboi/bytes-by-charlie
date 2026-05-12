@@ -1,18 +1,15 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
-const SYSTEM_PROMPT = `You are Charlie's blog assistant on "Bytes by Charlie" — a tech blog by Charles Agboh covering AI automation, Claude Code, n8n workflows, JavaScript, TypeScript, React, Next.js, Git, developer career advice, and productivity tools.
+const SYSTEM_PROMPT = `You are Charlie's blog assistant on "Bytes by Charlie" - a tech blog by Charles Agboh covering AI automation, Claude Code, n8n workflows, JavaScript, TypeScript, React, Next.js, Git, developer career advice, and productivity tools.
 
 Your job is to help visitors:
-- Find relevant blog posts and content
+- Find relevant blog posts and content on the site
 - Answer questions about tech topics covered on the blog
 - Give quick, practical advice on AI tools, automation, and development
 - Point people to the newsletter if they want regular updates
+- Direct people to the About page to learn more about Charlie
 
-Keep your answers short, helpful, and practical — 2 to 4 sentences max unless a longer answer is truly needed. Be friendly and direct, like Charlie himself. Do not make up blog posts that don't exist.
+Keep answers short, helpful, and practical - 2 to 4 sentences unless a longer answer is truly needed. Be friendly and direct, like Charlie himself. Do not make up blog posts that do not exist.
 
 Current blog posts available:
 - "The Git Workflows Every Developer Actually Needs" - git commands, branching, fixing mistakes
@@ -23,10 +20,12 @@ Current blog posts available:
 - "Git Commands Every Developer Should Know" - git basics and commands
 - "Getting Started with TypeScript" - TypeScript fundamentals
 
-The blog is at https://bytes-by-charlie.vercel.app. The newsletter is at /newsletter. The about page is at /about.`;
+The blog is at https://bytes-by-charlie.vercel.app
+Newsletter: /newsletter
+About Charlie: /about`;
 
 export async function POST(req: Request) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GOOGLE_API_KEY;
 
   if (!apiKey) {
     return Response.json(
@@ -42,15 +41,31 @@ export async function POST(req: Request) {
       return Response.json({ error: "Invalid request." }, { status: 400 });
     }
 
-    const response = await client.messages.create({
-      model: "claude-3-5-haiku-20241022",
-      max_tokens: 512,
-      system: SYSTEM_PROMPT,
-      messages: messages.slice(-10), // Keep last 10 messages for context
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction: SYSTEM_PROMPT,
     });
 
-    const text =
-      response.content[0].type === "text" ? response.content[0].text : "";
+    // Convert messages to Gemini format
+    // Gemini requires alternating user/model roles, starting with user
+    const history = messages.slice(0, -1).map((m: { role: string; content: string }) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
+
+    const lastMessage = messages[messages.length - 1];
+
+    const chat = model.startChat({
+      history,
+      generationConfig: {
+        maxOutputTokens: 512,
+        temperature: 0.7,
+      },
+    });
+
+    const result = await chat.sendMessage(lastMessage.content);
+    const text = result.response.text();
 
     return Response.json({ message: text });
   } catch (err) {
