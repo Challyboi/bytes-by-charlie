@@ -48,12 +48,17 @@ export async function POST(req: Request) {
     });
 
     // Convert messages to Gemini format
-    // Gemini requires alternating user/model roles, starting with user
-    const history = messages.slice(0, -1).map((m: { role: string; content: string }) => ({
+    // Gemini requires history to start with a "user" message - skip leading assistant messages
+    const allMessages = messages.map((m: { role: string; content: string }) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
     }));
 
+    // Find first user message index to build valid history
+    const firstUserIndex = allMessages.findIndex((m: { role: string }) => m.role === "user");
+
+    // History = everything from first user message up to (but not including) the last message
+    const history = firstUserIndex >= 0 ? allMessages.slice(firstUserIndex, -1) : [];
     const lastMessage = messages[messages.length - 1];
 
     const chat = model.startChat({
