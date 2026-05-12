@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 const SYSTEM_PROMPT = `You are Charlie's blog assistant on "Bytes by Charlie" - a tech blog by Charles Agboh covering AI automation, Claude Code, n8n workflows, JavaScript, TypeScript, React, Next.js, Git, developer career advice, and productivity tools.
 
@@ -23,11 +23,11 @@ Current blog posts available:
 The blog is at https://bytes-by-charlie.vercel.app. Newsletter: /newsletter. About: /about.`;
 
 export async function POST(req: Request) {
-  const apiKey = process.env.GOOGLE_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
     return Response.json(
-      { error: "GOOGLE_API_KEY is not set in environment variables." },
+      { error: "GROQ_API_KEY is not set in environment variables." },
       { status: 503 }
     );
   }
@@ -39,30 +39,46 @@ export async function POST(req: Request) {
       return Response.json({ error: "Invalid request." }, { status: 400 });
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+    // Build messages for Groq (OpenAI-compatible format)
+    const groqMessages = [
+      { role: "system", content: SYSTEM_PROMPT },
+      ...messages
+        .filter((m: { role: string; content: string }) => m.content?.trim())
+        .map((m: { role: string; content: string }) => ({
+          role: m.role === "assistant" ? "assistant" : "user",
+          content: m.content,
+        })),
+    ];
 
-    // Build a single prompt string that includes all context
-    // This avoids Gemini's strict history format requirements
-    const conversationText = messages
-      .map((m: { role: string; content: string }) => {
-        const label = m.role === "user" ? "User" : "Assistant";
-        return `${label}: ${m.content}`;
-      })
-      .join("\n\n");
+    const res = await fetch(GROQ_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "llama-3.1-8b-instant",
+        messages: groqMessages,
+        max_tokens: 512,
+        temperature: 0.7,
+      }),
+    });
 
-    const fullPrompt = `${SYSTEM_PROMPT}\n\nConversation so far:\n${conversationText}\n\nAssistant:`;
+    if (!res.ok) {
+      const err = await res.text();
+      return Response.json(
+        { error: `Groq API error: ${err}` },
+        { status: res.status }
+      );
+    }
 
-    const result = await model.generateContent(fullPrompt);
-    const text = result.response.text();
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content ?? "No response.";
 
     return Response.json({ message: text });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("Chat API error:", message);
-    return Response.json(
-      { error: `API error: ${message}` },
-      { status: 500 }
-    );
+    return Response.json({ error: `Error: ${message}` }, { status: 500 });
   }
 }
