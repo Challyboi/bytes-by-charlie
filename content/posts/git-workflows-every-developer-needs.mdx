@@ -1,0 +1,205 @@
+---
+title: "The Git Workflows Every Developer Actually Needs"
+date: "2026-05-12T08:00:00"
+description: "Beyond git add and git commit - the workflows, shortcuts, and mental models that separate developers who fight Git from those who own it."
+tags: ["git", "tools", "career"]
+coverColor: "#ef4444"
+---
+
+Most developers learn Git just enough to not lose their work. They memorise three commands, panic at every merge conflict, and treat the whole thing like a necessary evil.
+
+That is a shame, because Git is one of the most powerful tools in your stack - and once you actually understand how it thinks, everything gets easier.
+
+This post covers the workflows I use every day. Not the beginner stuff you already know. The actual patterns that make you faster.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200&q=80"
+  alt="Code on a screen showing version control workflow"
+  caption="Git is not just version control - it is a time machine for your codebase."
+/>
+
+---
+
+## Stop Committing Like It Is a Save Button
+
+The biggest mistake developers make is treating commits like Ctrl+S. "Saved my work, moving on."
+
+That is not what a commit is for. A commit is a **unit of meaning**. Every commit should answer one question: *what changed and why?*
+
+Bad commit message:
+```
+fix stuff
+```
+
+Also bad:
+```
+WIP
+```
+
+Good:
+```
+fix: prevent duplicate submissions on checkout form
+
+Added debounce to the submit handler - users were double-clicking
+and creating two orders. 500ms delay is barely noticeable but
+eliminates the race condition entirely.
+```
+
+That second one can be read by anyone - including you, six months from now, at 11pm trying to figure out why something broke.
+
+<Callout type="fire">
+Write commit messages for the version of you that has completely forgotten this code. That person is always three months away.
+</Callout>
+
+---
+
+## The Feature Branch Workflow (Done Properly)
+
+If you are committing directly to main, stop. Start using branches for everything - even tiny fixes.
+
+Here is the flow:
+
+```bash
+# Start every piece of work on a new branch
+git checkout -b feat/user-profile-page
+
+# Work, commit often
+git add .
+git commit -m "feat: add profile photo upload"
+
+# Keep your branch up to date with main
+git fetch origin
+git rebase origin/main
+
+# When done, push and open a PR
+git push -u origin feat/user-profile-page
+```
+
+The rebase step is important. It keeps your branch current so you are not merging stale code. It also makes your git history linear and readable - no ugly merge commits cluttering everything up.
+
+<Callout type="tip">
+Name branches with a prefix that signals intent: feat/ for features, fix/ for bug fixes, chore/ for maintenance. Your future self and teammates will thank you.
+</Callout>
+
+---
+
+## The Commands You Probably Are Not Using
+
+### git stash
+
+You are in the middle of something, a hotfix comes in, you do not want to commit half-done work. Stash it:
+
+```bash
+git stash
+# switch branches, fix the hotfix, come back
+git stash pop
+```
+
+Your in-progress work disappears and comes back exactly as you left it.
+
+### git log --oneline --graph
+
+Your standard `git log` is a wall of text. This is better:
+
+```bash
+git log --oneline --graph --decorate --all
+```
+
+Alias it to something short and use it daily. You will immediately see the shape of your branch history.
+
+### git diff --staged
+
+Before you commit, see exactly what you are committing:
+
+```bash
+git diff --staged
+```
+
+Catches typos, debug logs, and console.log statements you forgot to remove. Make this a habit before every commit.
+
+### git bisect
+
+You introduced a bug somewhere in the last 50 commits and you have no idea where. `git bisect` does a binary search through your commit history:
+
+```bash
+git bisect start
+git bisect bad          # current state is broken
+git bisect good v1.2.0  # this version worked
+# Git checks out the midpoint commit
+# You test it, then tell Git:
+git bisect good         # or: git bisect bad
+# Repeat until Git finds the exact breaking commit
+git bisect reset        # done
+```
+
+This sounds complex but it finds bugs in 6-7 steps that would take you hours manually.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&q=80"
+  alt="Terminal window showing git commands"
+  caption="git bisect is one of the most underused power tools in the entire Git toolkit."
+/>
+
+---
+
+## Fixing Mistakes Without Panicking
+
+Everyone makes mistakes in Git. The difference between a beginner and an experienced developer is not that experts make fewer mistakes - it is that they know how to undo them without breaking everything.
+
+**Undo the last commit (keep your changes):**
+```bash
+git reset --soft HEAD~1
+```
+
+**Undo changes to a specific file:**
+```bash
+git checkout -- path/to/file.js
+```
+
+**Amend the last commit message:**
+```bash
+git commit --amend -m "corrected commit message"
+```
+
+**Accidentally committed to the wrong branch?**
+```bash
+# Copy the commit hash from git log
+git log --oneline
+
+# Go to the right branch and cherry-pick it
+git checkout correct-branch
+git cherry-pick abc1234
+
+# Remove it from the wrong branch
+git checkout wrong-branch
+git reset --hard HEAD~1
+```
+
+<Callout type="warning">
+Never use git reset --hard on commits that have already been pushed to a shared branch. You will rewrite history that others are relying on - that creates real problems for your team.
+</Callout>
+
+---
+
+## A Workflow That Actually Scales
+
+Here is how I approach Git on any serious project:
+
+1. **main is always deployable.** Nothing goes directly to main. Everything goes through a PR, even if it is just you reviewing your own work.
+2. **Commit small, commit often.** Smaller commits are easier to review, easier to revert, and easier to understand.
+3. **Write the PR description like documentation.** Explain the problem, the solution, and anything reviewers should pay attention to.
+4. **Squash before merging.** Clean up your messy WIP commits into one or two meaningful ones before the PR merges.
+
+<YoutubeEmbed id="ecK3EnyGD8o" title="Git and GitHub for Beginners - Crash Course" />
+
+---
+
+## The Mental Model That Changes Everything
+
+Git tracks **snapshots**, not differences. Every commit is a complete picture of your project at that moment. The branches are just pointers to specific snapshots.
+
+Once that clicks, everything else makes sense - why branches are cheap, why checkout is instant, why merging and rebasing work the way they do.
+
+Stop fighting Git. Learn how it thinks, and it becomes one of the most reliable tools in your workflow.
+
+Commit deliberately. Branch always. Push often. 🔀
