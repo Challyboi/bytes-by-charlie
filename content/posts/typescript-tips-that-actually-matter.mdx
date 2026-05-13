@@ -1,0 +1,206 @@
+---
+title: "TypeScript Tips That Actually Matter in 2026"
+date: "2026-05-13T08:00:00"
+description: "Skip the basics you already know. These are the TypeScript patterns that make real codebases cleaner, safer, and easier to maintain."
+tags: ["typescript", "javascript", "tools"]
+coverColor: "#3b82f6"
+---
+
+Everyone knows TypeScript adds types to JavaScript. That is not a tip - that is the tagline.
+
+What actually makes TypeScript powerful is not the basic stuff. It is the patterns most tutorials skip because they assume you already know them. Most people do not.
+
+Here is what actually matters.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80"
+  alt="Code editor showing TypeScript code"
+  caption="TypeScript is not just about avoiding runtime errors - it is about making your code self-documenting."
+/>
+
+---
+
+## Stop Using `any`. Use `unknown` Instead.
+
+When you reach for `any`, you are telling TypeScript to give up. The whole point of the type system disappears.
+
+`unknown` is what you actually want. It forces you to check the type before you use the value:
+
+```typescript
+// Bad - TypeScript trusts you blindly
+function parseData(input: any) {
+  return input.name.toUpperCase(); // No error, but will crash at runtime
+}
+
+// Good - TypeScript makes you prove it first
+function parseData(input: unknown) {
+  if (typeof input === "object" && input !== null && "name" in input) {
+    return (input as { name: string }).name.toUpperCase();
+  }
+  throw new Error("Invalid input");
+}
+```
+
+Every API response, every JSON parse, every external data source - start with `unknown`.
+
+<Callout type="fire">
+If you are using `any` to silence a TypeScript error, you have not fixed the problem. You have hidden it. Use `unknown` and actually handle it.
+</Callout>
+
+---
+
+## Use Discriminated Unions for State
+
+This one alone will clean up so much messy conditional logic.
+
+Instead of optional fields that may or may not exist:
+
+```typescript
+// Messy - you never know what is actually set
+interface Response {
+  data?: User;
+  error?: string;
+  loading?: boolean;
+}
+```
+
+Use a discriminated union where each state is explicit:
+
+```typescript
+type Response =
+  | { status: "loading" }
+  | { status: "success"; data: User }
+  | { status: "error"; message: string };
+
+function renderResponse(res: Response) {
+  switch (res.status) {
+    case "loading":
+      return "Loading...";
+    case "success":
+      return res.data.name; // TypeScript knows data exists here
+    case "error":
+      return res.message; // TypeScript knows message exists here
+  }
+}
+```
+
+TypeScript narrows the type inside each case. No optional chaining needed. No "could be undefined" errors.
+
+---
+
+## `satisfies` is the Operator You Did Not Know You Needed
+
+Added in TypeScript 4.9, `satisfies` validates a value against a type without widening it:
+
+```typescript
+const palette = {
+  red: [255, 0, 0],
+  green: "#00ff00",
+  blue: [0, 0, 255],
+} satisfies Record<string, string | number[]>;
+
+// TypeScript knows red is number[], not string | number[]
+palette.red.map(x => x * 2); // Works fine
+palette.green.toUpperCase();  // Works fine
+```
+
+Without `satisfies`, you would need a type annotation that loses the specific types. With it, you get both validation and inference.
+
+<Callout type="tip">
+Use `satisfies` when you want TypeScript to check a value matches a type, but you still want the narrower inferred type for the actual variable.
+</Callout>
+
+---
+
+## Utility Types You Should Actually Be Using
+
+TypeScript ships with utility types that most people ignore. These save you from rewriting types repeatedly:
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}
+
+// Pick only what you need
+type PublicUser = Pick<User, "id" | "name" | "email">;
+
+// Make all fields optional
+type UserUpdate = Partial<User>;
+
+// Make all fields required
+type StrictUser = Required<User>;
+
+// Remove sensitive fields
+type SafeUser = Omit<User, "password">;
+
+// Extract return type of a function
+type UserResponse = ReturnType<typeof fetchUser>;
+
+// Extract the type inside a Promise
+type ResolvedUser = Awaited<Promise<User>>;
+```
+
+These are composable. You can stack them:
+
+```typescript
+type CreateUserInput = Required<Pick<User, "name" | "email">> & {
+  password: string;
+};
+```
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&q=80"
+  alt="Multiple screens showing code"
+  caption="Utility types are TypeScript's superpower - learn them once and they pay off on every project."
+/>
+
+---
+
+## Template Literal Types
+
+You can build string types dynamically - this is underused and genuinely powerful:
+
+```typescript
+type Direction = "top" | "right" | "bottom" | "left";
+type Margin = `margin-${Direction}`;
+// "margin-top" | "margin-right" | "margin-bottom" | "margin-left"
+
+type EventName = "click" | "focus" | "blur";
+type Handler = `on${Capitalize<EventName>}`;
+// "onClick" | "onFocus" | "onBlur"
+```
+
+This is how libraries like Tailwind's TypeScript support work internally. You get full autocomplete for string combinations without manually listing every option.
+
+---
+
+## Turn On Strict Mode and Leave It On
+
+If your `tsconfig.json` does not have this, fix it now:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true
+  }
+}
+```
+
+`strict: true` enables a bundle of checks that should honestly be on by default. Without it you are missing half the point of TypeScript.
+
+<Callout type="warning">
+Turning on strict mode on an existing codebase will surface a lot of errors at once. That is not TypeScript being annoying - that is TypeScript showing you the bugs that were already there.
+</Callout>
+
+---
+
+## The Mindset Shift
+
+TypeScript is not about adding types to make the compiler happy. It is about encoding what you know about your data into the language itself, so the editor can catch your mistakes before they reach production.
+
+The more precise your types, the more TypeScript can help you. Vague types like `any` or `object` give you nothing. Specific types give you superpowers.
+
+Write types like documentation that cannot go out of date. 🔷
