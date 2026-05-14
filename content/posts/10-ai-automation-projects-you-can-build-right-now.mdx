@@ -1,0 +1,141 @@
+---
+title: "10 AI Automation Projects You Can Build Right Now"
+date: "2026-05-14T08:00:00"
+description: "Stop reading about AI automation and start building it. Here are 10 real projects across marketing, sales, operations, and support - with the tools and stack for each one."
+tags: ["ai", "automation", "tools", "n8n"]
+coverColor: "#f97316"
+---
+
+Most people read about AI automation, nod along, then go back to doing things manually.
+
+This post is not that. These are 10 real projects you can scope, build, and ship - grouped by what they actually solve. Each one has a specific tool stack so you know exactly where to start.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&q=80"
+  alt="AI automation dashboard showing connected workflows"
+  caption="The gap between knowing about AI automation and actually shipping it is smaller than you think."
+/>
+
+---
+
+## 1. Marketing and Content Automation
+
+### Viral Content Generator
+
+Take a blog post URL. Feed it to an AI. Get back five LinkedIn posts and three Instagram captions, each tailored to the tone of that platform. Done.
+
+The stack: **n8n + OpenAI API + Webhook trigger**. A single HTTP node fetches the article, a second node sends the content to GPT-4o with a structured prompt, and the output splits into separate branches for each format. Build once, use on every article you publish.
+
+<Callout type="fire">
+The prompt matters more than the model here. Tell the AI the word count, the platform voice, and whether the post should drive clicks or engagement. Vague prompts produce generic output.
+</Callout>
+
+### Automated SEO Reporter
+
+Every Monday, a workflow pulls your competitor rankings from Semrush or Ahrefs via their API, runs a diff against last week's data, and drafts a short email summary with the biggest movements. No spreadsheets. No manual checking.
+
+Stack: **n8n + Semrush API + Gmail**. The analysis step uses a Code node to calculate week-over-week changes, then an AI node writes the narrative summary.
+
+### Multimodal Document Search
+
+Build an internal search tool where employees can drop in an image or type a question and instantly surface relevant company documents. The use case is real: people waste 20 minutes searching for a PDF they know exists.
+
+Stack: **LlamaIndex or LangChain + OpenAI embeddings + Pinecone**. Chunk your documents, embed them, store them, and build a simple query interface on top.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&q=80"
+  alt="Planning and workflow automation on a desk"
+  caption="Automation projects that solve real internal problems get used. Build for the 20-minute pain, not the hypothetical one."
+/>
+
+---
+
+## 2. Lead Generation and Sales
+
+### AI Sales Qualification Agent
+
+An AI voice agent makes the first contact call. It asks qualification questions, handles basic objections, and logs the outcome directly to HubSpot or Salesforce. Your sales team only picks up from there.
+
+Stack: **Vapi or Retell AI + HubSpot API + n8n**. The voice agent handles the call, n8n catches the webhook when the call ends, extracts the transcript data, and updates the CRM record automatically.
+
+<YoutubeEmbed id="T5SZpUuMl5Q" title="Building AI Agent Workflows - n8n in Action" />
+
+### LinkedIn Prospecting Bot
+
+Apify scrapes job listings matching your target criteria. An AI node reads each listing, identifies the likely decision-maker role, and writes a personalised outreach email referencing the job. The emails drop into a queue for your review before sending.
+
+Stack: **Apify + n8n + OpenAI + Gmail**. The personalisation step is the differentiator. Generic outreach fails. Referencing what they actually posted works.
+
+### Restaurant and Local Business Outreach
+
+A workflow searches Google Maps for businesses that opened in the last six months, visits their website, and drafts a cold outreach email based on what it finds. If they have no website or a broken one, that is the pitch hook.
+
+Stack: **Apify Google Maps Scraper + n8n + OpenAI + Gmail**. Run it weekly. Refresh your pipeline with zero manual prospecting.
+
+<Callout type="tip">
+Filter by review count, not just date. A business with 50 reviews in three months is growing fast and more likely to invest in services than one with 2 reviews in six months.
+</Callout>
+
+---
+
+## 3. Productivity and Operations
+
+### AI Email Classifier
+
+Every incoming email gets read by GPT, tagged as urgent, sales, or support, and routed to the right Slack channel with a one-line summary. No more triage meetings. No more missed emails buried in a shared inbox.
+
+Stack: **Gmail API + n8n + OpenAI + Slack**. Add a confidence score to the classification. If confidence is below 80%, route it to a human review channel instead of acting automatically.
+
+<YoutubeEmbed id="1MwSoB0gnM4" title="n8n - The Power of Open Source Workflow Automation" />
+
+### PDF and Invoice Parser
+
+Scanned invoices come in as PDFs. A workflow extracts the data using OCR + an LLM, pulls out the vendor name, amount, date, and line items, and logs everything into a Google Sheet or Airtable. Your accountant no longer touches data entry.
+
+Stack: **n8n + Google Document AI or Tesseract + OpenAI + Google Sheets**. The structured extraction prompt is the key. Ask the model to return JSON with named fields. It is far easier to process than free-form text.
+
+<Callout type="info">
+Test your parser on five real invoices from different vendors before trusting it. Layout variation across vendors is where most parsers break.
+</Callout>
+
+### AI Meeting Assistant
+
+A bot joins every meeting, records the audio, transcribes it, and produces a clean list of action items with owners and deadlines. The summary hits your Slack channel before the meeting room has cleared out.
+
+Stack: **Recall.ai or Fireflies.ai + OpenAI + Slack + n8n**. The action item extraction prompt should ask explicitly for format: name, task, deadline. Unstructured summaries are still better than nothing, but structured ones are what teams actually act on.
+
+---
+
+## 4. Customer Support
+
+### WhatsApp AI Assistant
+
+Customers send a WhatsApp message. An AI reads it, checks their order status via your database, and replies with an accurate answer - no human in the loop for the common questions. Escalation goes to a real agent.
+
+Stack: **WhatsApp Business API + n8n + OpenAI + your backend API**. Build a set of function tools for the AI: check order status, get tracking info, trigger a refund request. The AI decides which tool to call based on the message.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80"
+  alt="Dashboard showing customer support automation metrics"
+  caption="Automating the 10 most common support questions handles 60-70% of your support volume. The rest still needs humans."
+/>
+
+### Instagram DM Auto-Responder
+
+New DM comes in. ManyChat catches it, passes the message to OpenAI, gets a relevant reply based on your FAQ knowledge base, and sends it back - usually within three seconds.
+
+Stack: **ManyChat + OpenAI API + Instagram API**. Keep a JSON file of your top 30 FAQs as the context for the model. Update it monthly. The replies stay accurate without rebuilding anything.
+
+<Callout type="fire">
+Always have a clear escalation trigger. If the AI cannot answer with confidence above a set threshold, or if the customer says "human" or "agent", it should immediately hand off to a real person without making them repeat themselves.
+</Callout>
+
+---
+
+## Where to Start
+
+Ten projects is a lot. Pick one that solves something you are currently doing manually. The email classifier, the invoice parser, or the content generator are the easiest to build first and the quickest to show results.
+
+Build the boring one. Ship it. Then build the next one.
+
+Automation compounds. 🔶
