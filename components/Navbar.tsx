@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, useRef } from "react";
 import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
+import { useAuth, UserButton } from "@clerk/nextjs";
 
 /* ── Desktop dropdown groups ───────────────────────────────── */
 const dropdowns = [
@@ -38,6 +39,7 @@ const sections = dropdowns;
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { isSignedIn, isLoaded } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -151,6 +153,34 @@ export default function Navbar() {
           {/* Right side */}
           <div className="flex items-center gap-2">
             <ThemeToggle />
+
+            {/* Auth - desktop */}
+            {isLoaded && !isSignedIn && (
+              <>
+                <Link
+                  href="/sign-in"
+                  className="hidden md:inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/sign-up"
+                  className="hidden md:inline-flex items-center gap-1.5 bg-slate-900 dark:bg-white hover:bg-slate-700 dark:hover:bg-slate-100 text-white dark:text-slate-900 text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
+            {isLoaded && isSignedIn && (
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "w-8 h-8 ring-2 ring-indigo-200 dark:ring-indigo-800",
+                  },
+                }}
+              />
+            )}
+
             <Link
               href="/newsletter"
               className="hidden md:inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
@@ -209,6 +239,26 @@ export default function Navbar() {
                 ✉️ Contact
               </a>
             </div>
+
+            {/* Auth - mobile */}
+            {isLoaded && !isSignedIn && (
+              <div className="flex gap-3 px-6 py-3 border-b border-slate-100 dark:border-slate-800">
+                <Link href="/sign-in" onClick={() => setMenuOpen(false)}
+                  className="flex-1 flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold px-4 py-2.5 rounded-xl">
+                  Sign in
+                </Link>
+                <Link href="/sign-up" onClick={() => setMenuOpen(false)}
+                  className="flex-1 flex items-center justify-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-semibold px-4 py-2.5 rounded-xl">
+                  Sign up
+                </Link>
+              </div>
+            )}
+            {isLoaded && isSignedIn && (
+              <div className="flex items-center gap-3 px-6 py-3 border-b border-slate-100 dark:border-slate-800">
+                <UserButton appearance={{ elements: { avatarBox: "w-8 h-8" } }} />
+                <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Your account</span>
+              </div>
+            )}
 
             {/* Home link */}
             <div className="px-4 pt-3">

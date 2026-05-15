@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import FloatingButtons from "@/components/FloatingButtons";
 import ChatWidget from "@/components/ChatWidget";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const SITE_URL = "https://bytes-by-charlie.vercel.app";
 
@@ -76,16 +77,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
-        <ThemeProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <FloatingButtons />
-          <ChatWidget />
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className="min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+          <ThemeProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <FloatingButtons />
+            <ChatWidget />
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

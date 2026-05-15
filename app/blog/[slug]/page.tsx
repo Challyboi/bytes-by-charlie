@@ -9,7 +9,10 @@ import ReadingProgress from "@/components/ReadingProgress";
 import ShareButtons from "@/components/ShareButtons";
 import RelatedPosts from "@/components/RelatedPosts";
 import TableOfContents from "@/components/TableOfContents";
-import GiscusComments from "@/components/GiscusComments";
+import BackToTop from "@/components/BackToTop";
+import AuthorCard from "@/components/AuthorCard";
+import PostNavigation from "@/components/PostNavigation";
+import Comments from "@/components/Comments";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -42,26 +45,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const TAG_COLORS: Record<string, string> = {
-  javascript: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  typescript: "bg-blue-100 text-blue-700 border-blue-200",
-  react: "bg-cyan-100 text-cyan-700 border-cyan-200",
-  nextjs: "bg-slate-100 text-slate-600 border-slate-200",
-  css: "bg-pink-100 text-pink-700 border-pink-200",
-  nodejs: "bg-green-100 text-green-700 border-green-200",
-  git: "bg-red-100 text-red-700 border-red-200",
-  ai: "bg-violet-100 text-violet-700 border-violet-200",
-  automation: "bg-orange-100 text-orange-700 border-orange-200",
-  tools: "bg-teal-100 text-teal-700 border-teal-200",
-  career: "bg-purple-100 text-purple-700 border-purple-200",
-  beginners: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  frontend: "bg-rose-100 text-rose-700 border-rose-200",
+const TAG_COLORS: Record<string, { bg: string; text: string }> = {
+  javascript: { bg: "bg-yellow-100 dark:bg-yellow-900/30", text: "text-yellow-700 dark:text-yellow-400" },
+  typescript: { bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-blue-700 dark:text-blue-400" },
+  react:       { bg: "bg-cyan-100 dark:bg-cyan-900/30",  text: "text-cyan-700 dark:text-cyan-400" },
+  nextjs:      { bg: "bg-slate-100 dark:bg-slate-800",   text: "text-slate-600 dark:text-slate-300" },
+  git:         { bg: "bg-red-100 dark:bg-red-900/30",    text: "text-red-700 dark:text-red-400" },
+  ai:          { bg: "bg-violet-100 dark:bg-violet-900/30", text: "text-violet-700 dark:text-violet-400" },
+  automation:  { bg: "bg-orange-100 dark:bg-orange-900/30", text: "text-orange-700 dark:text-orange-400" },
+  tools:       { bg: "bg-teal-100 dark:bg-teal-900/30",  text: "text-teal-700 dark:text-teal-400" },
+  career:      { bg: "bg-purple-100 dark:bg-purple-900/30", text: "text-purple-700 dark:text-purple-400" },
+  beginners:   { bg: "bg-emerald-100 dark:bg-emerald-900/30", text: "text-emerald-700 dark:text-emerald-400" },
+  frontend:    { bg: "bg-rose-100 dark:bg-rose-900/30",  text: "text-rose-700 dark:text-rose-400" },
+  n8n:         { bg: "bg-orange-100 dark:bg-orange-900/30", text: "text-orange-700 dark:text-orange-400" },
 };
 
-function tagColor(tag: string) {
+function TagPill({ tag }: { tag: string }) {
+  const colors = TAG_COLORS[tag.toLowerCase()] ?? {
+    bg: "bg-indigo-100 dark:bg-indigo-900/30",
+    text: "text-indigo-700 dark:text-indigo-400",
+  };
   return (
-    TAG_COLORS[tag.toLowerCase()] ??
-    "bg-indigo-100 text-indigo-700 border-indigo-200"
+    <span className={`text-xs font-bold px-3 py-1 rounded-full ${colors.bg} ${colors.text}`}>
+      {tag}
+    </span>
   );
 }
 
@@ -74,140 +81,215 @@ export default async function PostPage({ params }: Props) {
   const { default: Post } = await import(`@/content/posts/${slug}.mdx`);
 
   return (
-    <div>
-      {/* Reading progress bar - fixed at top */}
+    <div className="relative">
+      {/* Fixed UI */}
       <ReadingProgress />
+      <BackToTop />
 
-      {/* Hero banner */}
+      {/* ── HERO ──────────────────────────────────────────────── */}
       <div
-        className="relative overflow-hidden text-white py-20 px-6"
+        className="relative overflow-hidden text-white"
         style={{
-          background: `linear-gradient(135deg, ${meta.coverColor}f0 0%, ${meta.coverColor}99 100%)`,
+          background: `linear-gradient(135deg, ${meta.coverColor}ee 0%, ${meta.coverColor}bb 50%, ${meta.coverColor}88 100%)`,
         }}
       >
-        {/* Dot pattern */}
+        {/* Layered decorative backgrounds */}
         <div
-          className="absolute inset-0 opacity-10"
+          className="absolute inset-0 opacity-[0.07]"
           style={{
-            backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
+            backgroundImage: "radial-gradient(circle, white 1.5px, transparent 1.5px)",
+            backgroundSize: "32px 32px",
           }}
         />
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(45deg, white 1px, transparent 1px), linear-gradient(-45deg, white 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
+        {/* Glow orbs */}
+        <div
+          className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20 blur-3xl"
+          style={{ background: "radial-gradient(circle, white, transparent)" }}
+        />
+        <div
+          className="absolute -bottom-12 -left-12 w-64 h-64 rounded-full opacity-10 blur-3xl"
+          style={{ background: "radial-gradient(circle, white, transparent)" }}
+        />
 
-        <div className="relative max-w-3xl mx-auto">
+        <div className="relative max-w-4xl mx-auto px-6 pt-10 pb-16">
+          {/* Back link */}
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-white/70 hover:text-white text-sm mb-8 transition-colors group"
+            className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm font-medium mb-10 transition-colors group"
           >
-            <span className="group-hover:-translate-x-1 transition-transform">
-              &larr;
-            </span>{" "}
-            Back to all posts
+            <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            All posts
           </Link>
 
+          {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-5">
             {meta.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-xs font-semibold px-3 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm border border-white/20"
+                className="text-xs font-bold px-3 py-1.5 rounded-full bg-white/15 text-white backdrop-blur-sm border border-white/20 uppercase tracking-wide"
               >
                 {tag}
               </span>
             ))}
           </div>
 
-          <h1 className="text-3xl md:text-4xl xl:text-5xl font-extrabold mb-5 leading-tight">
+          {/* Title */}
+          <h1 className="text-3xl sm:text-4xl xl:text-5xl font-extrabold leading-tight mb-5 tracking-tight">
             {meta.title}
           </h1>
-          <p className="text-white/75 text-lg mb-8 max-w-2xl leading-relaxed">
+
+          {/* Description */}
+          <p className="text-white/75 text-lg leading-relaxed mb-8 max-w-2xl">
             {meta.description}
           </p>
 
-          {/* Author row */}
-          <div className="flex items-center gap-4">
-            <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-white/30 flex-shrink-0">
-              <Image
-                src="/charlie.jpg"
-                alt="Charles Agboh"
-                width={44}
-                height={44}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div>
-              <p className="font-bold text-white text-sm">Charles Agboh</p>
-              <div className="flex items-center gap-3 text-white/60 text-xs">
-                <span>{format(new Date(meta.date), "MMMM d, yyyy")}</span>
-                <span>&middot;</span>
-                <span>{meta.readingTime}</span>
+          {/* Author + meta row */}
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-white/30 flex-shrink-0">
+                <Image
+                  src="/charlie.jpg"
+                  alt="Charles Agboh"
+                  width={44}
+                  height={44}
+                  className="w-full h-full object-cover"
+                />
               </div>
+              <div>
+                <p className="font-bold text-white text-sm">Charles Agboh</p>
+                <div className="flex items-center gap-2 text-white/55 text-xs">
+                  <span>{format(new Date(meta.date), "MMM d, yyyy")}</span>
+                  <span>&middot;</span>
+                  <span>{meta.readingTime}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Share pill in hero */}
+            <div className="ml-auto flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2">
+              <svg className="w-3.5 h-3.5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              <span className="text-white/70 text-xs font-medium">Share</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Content + Sidebar layout */}
-      <div className="max-w-7xl mx-auto px-6 py-14">
-        <div className="flex gap-14 items-start">
+      {/* ── CONTENT LAYOUT ────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
+        <div className="flex gap-12 xl:gap-16 items-start">
 
-          {/* Main article */}
-          <div className="flex-1 min-w-0 max-w-3xl">
-            <article>
+          {/* ── MAIN ARTICLE ── */}
+          <div className="flex-1 min-w-0">
+
+            {/* Article body */}
+            <article className="prose-custom max-w-none">
               <Post />
             </article>
 
-            {/* Tags */}
-            <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-2">
+            {/* ── TAGS ── */}
+            <div className="mt-12 flex flex-wrap gap-2">
               {meta.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className={`text-xs font-semibold px-3 py-1 rounded-full border ${tagColor(tag)}`}
-                >
-                  {tag}
-                </span>
+                <TagPill key={tag} tag={tag} />
               ))}
             </div>
 
-            {/* Share buttons */}
-            <div className="mt-6 p-5 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+            {/* ── SHARE ── */}
+            <div className="mt-6 p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border border-slate-100 dark:border-slate-700">
+              <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
+                Found this helpful? Share it.
+              </p>
               <ShareButtons title={meta.title} slug={slug} />
             </div>
 
-            {/* Newsletter */}
+            {/* ── AUTHOR CARD ── */}
+            <AuthorCard />
+
+            {/* ── NEWSLETTER ── */}
             <NewsletterSignup variant="inline" />
 
-            {/* Related posts */}
+            {/* ── RELATED POSTS ── */}
             <RelatedPosts
               currentSlug={slug}
               currentTags={meta.tags}
               allPosts={allPosts}
             />
 
-            {/* Comments */}
-            <GiscusComments />
+            {/* ── COMMENTS ── */}
+            <Comments slug={slug} />
 
-            {/* Footer nav */}
-            <div className="flex items-center justify-between mt-10 pt-6 border-t border-slate-100 dark:border-slate-800">
-              <Link
-                href="/blog"
-                className="inline-flex items-center gap-2 text-indigo-600 font-semibold hover:underline text-sm group"
-              >
-                <span className="group-hover:-translate-x-1 transition-transform">
-                  &larr;
-                </span>{" "}
-                All posts
-              </Link>
-              <Link
-                href="/resources"
-                className="text-slate-500 dark:text-slate-400 hover:text-indigo-600 font-medium text-sm transition-colors"
-              >
-                Explore resources &rarr;
-              </Link>
-            </div>
+            {/* ── POST NAV ── */}
+            <PostNavigation allPosts={allPosts} currentSlug={slug} />
           </div>
 
-          {/* Floating Table of Contents - xl screens only */}
-          <TableOfContents />
+          {/* ── SIDEBAR ── */}
+          <aside className="hidden xl:flex flex-col gap-6 w-64 flex-shrink-0 sticky top-28 self-start">
+            {/* Table of contents */}
+            <TableOfContents />
+
+            {/* Article info card */}
+            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-4">
+              <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                About this post
+              </p>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2.5 text-sm">
+                  <span className="text-base">⏱️</span>
+                  <div>
+                    <p className="text-slate-400 dark:text-slate-500 text-xs">Reading time</p>
+                    <p className="font-semibold text-slate-700 dark:text-slate-300">{meta.readingTime}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5 text-sm">
+                  <span className="text-base">📅</span>
+                  <div>
+                    <p className="text-slate-400 dark:text-slate-500 text-xs">Published</p>
+                    <p className="font-semibold text-slate-700 dark:text-slate-300">
+                      {format(new Date(meta.date), "MMM d, yyyy")}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5 text-sm">
+                  <span className="text-base">✍️</span>
+                  <div>
+                    <p className="text-slate-400 dark:text-slate-500 text-xs">Author</p>
+                    <p className="font-semibold text-slate-700 dark:text-slate-300">Charles Agboh</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tags in sidebar */}
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">
+                  Tags
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {meta.tags.map((tag) => (
+                    <TagPill key={tag} tag={tag} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Share in sidebar */}
+            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+              <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
+                Share
+              </p>
+              <ShareButtons title={meta.title} slug={slug} compact />
+            </div>
+          </aside>
         </div>
       </div>
     </div>
