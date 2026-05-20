@@ -69,6 +69,9 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
     },
   },
+  verification: {
+    google: "CWZmlYYd0JiWOl0kaWFzGD0v53YhmMknsLu68KDb788",
+  },
 };
 
 export default function RootLayout({
