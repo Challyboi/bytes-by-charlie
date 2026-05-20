@@ -73,6 +73,8 @@ function TagPill({ tag }: { tag: string }) {
   );
 }
 
+const SITE_URL = "https://bytes-by-charlie.vercel.app";
+
 export default async function PostPage({ params }: Props) {
   const { slug } = await params;
   const meta = getPostBySlug(slug);
@@ -81,8 +83,46 @@ export default async function PostPage({ params }: Props) {
   const allPosts = getAllPosts();
   const { default: Post } = await import(`@/content/posts/${slug}.mdx`);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: meta.title,
+    description: meta.description,
+    url: `${SITE_URL}/blog/${slug}`,
+    datePublished: meta.date,
+    dateModified: meta.date,
+    image: `${SITE_URL}/charlie.jpg`,
+    keywords: meta.tags.join(", "),
+    author: {
+      "@type": "Person",
+      name: "Charles Agboh",
+      url: `${SITE_URL}/about`,
+      sameAs: [
+        "https://twitter.com/charlyboi",
+        "https://linkedin.com/in/charlesagboh",
+      ],
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Bytes by Charlie",
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/charlie.jpg`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/blog/${slug}`,
+    },
+  };
+
   return (
     <div className="relative">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Fixed UI */}
       <ReadingProgress />
       <BackToTop />

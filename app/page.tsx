@@ -30,12 +30,48 @@ const topics = [
   { label: "Career & Growth", icon: "📈", color: "from-pink-500 to-rose-600", href: "/blog" },
 ];
 
+const SITE_URL = "https://bytes-by-charlie.vercel.app";
+
 export default function HomePage() {
   const allPosts = getAllPosts();
   const featured = allPosts.slice(0, 3);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Bytes by Charlie",
+    description: "Tech insights, AI automation, and developer tools by Charles Agboh.",
+    url: SITE_URL,
+    author: {
+      "@type": "Person",
+      name: "Charles Agboh",
+      url: `${SITE_URL}/about`,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Bytes by Charlie",
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/charlie.jpg`,
+      },
+    },
+    blogPost: allPosts.slice(0, 10).map((p) => ({
+      "@type": "BlogPosting",
+      headline: p.title,
+      description: p.description,
+      url: `${SITE_URL}/blog/${p.slug}`,
+      datePublished: p.date,
+      author: { "@type": "Person", name: "Charles Agboh" },
+    })),
+  };
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-slate-950 text-white">
         {/* Background grid */}
