@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { format } from "date-fns";
 import type { PostMeta } from "@/lib/posts";
 
@@ -115,48 +116,59 @@ export default function BlogList({ posts }: { posts: PostMeta[] }) {
           </button>
         </div>
       ) : (
-        <div className="space-y-5">
-          {filtered.map((post, i) => (
+        <div className="space-y-4">
+          {filtered.map((post) => (
             <Link key={post.slug} href={`/blog/${post.slug}`}>
-              <article className="post-card group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-5 items-start hover:border-indigo-100 dark:hover:border-indigo-700">
-                {/* Number */}
-                <div
-                  className="hidden md:flex w-12 h-12 rounded-xl items-center justify-center font-extrabold text-lg flex-shrink-0"
-                  style={{
-                    background: `${post.coverColor}18`,
-                    color: post.coverColor,
-                  }}
-                >
-                  {String(i + 1).padStart(2, "0")}
+              <article className="post-card group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col sm:flex-row hover:border-indigo-100 dark:hover:border-indigo-700">
+
+                {/* Thumbnail image */}
+                <div className="relative sm:w-52 sm:flex-shrink-0 h-48 sm:h-auto overflow-hidden">
+                  <Image
+                    src={post.coverImage}
+                    alt={post.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, 208px"
+                  />
+                  {/* Subtle color overlay using coverColor */}
+                  <div
+                    className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity"
+                    style={{
+                      background: `linear-gradient(135deg, ${post.coverColor}, transparent)`,
+                    }}
+                  />
                 </div>
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${tagColor(tag)}`}
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                {/* Content */}
+                <div className="flex-1 min-w-0 p-5 flex flex-col justify-between">
+                  <div>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {post.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${tagColor(tag)}`}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <h2 className="text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2 leading-snug">
+                      {post.title}
+                    </h2>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed line-clamp-2">
+                      {post.description}
+                    </p>
                   </div>
-                  <h2 className="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2 leading-snug">
-                    {post.title}
-                  </h2>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed line-clamp-2 mb-4">
-                    {post.description}
-                  </p>
-                  <div className="flex items-center gap-5 text-xs text-slate-400 dark:text-slate-500">
-                    <span>📅 {format(new Date(post.date), "MMMM d, yyyy")}</span>
-                    <span>⏱ {post.readingTime}</span>
-                  </div>
-                </div>
 
-                <div className="hidden md:flex items-center self-center">
-                  <span className="w-9 h-9 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/40 text-slate-400 group-hover:text-indigo-600 transition-all text-lg">
-                    →
-                  </span>
+                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-50 dark:border-slate-800">
+                    <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-slate-500">
+                      <span>📅 {format(new Date(post.date), "MMM d, yyyy")}</span>
+                      <span>⏱ {post.readingTime}</span>
+                    </div>
+                    <span className="w-8 h-8 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/40 text-slate-400 group-hover:text-indigo-600 transition-all text-sm">
+                      →
+                    </span>
+                  </div>
                 </div>
               </article>
             </Link>

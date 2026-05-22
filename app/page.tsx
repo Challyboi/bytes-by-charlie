@@ -226,21 +226,38 @@ export default function HomePage() {
             <div className="grid md:grid-cols-3 gap-6">
               {featured.map((post) => (
                 <Link key={post.slug} href={`/blog/${post.slug}`}>
-                  <article className="post-card bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 h-full flex flex-col">
-                    <div className="h-2 w-full" style={{ background: post.coverColor }} />
-                    <div className="p-6 flex flex-col flex-1">
-                      <div className="flex flex-wrap gap-2 mb-4">
+                  <article className="post-card bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 h-full flex flex-col group">
+                    {/* Cover image */}
+                    <div className="relative h-44 overflow-hidden">
+                      <Image
+                        src={post.coverImage}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                      <div
+                        className="absolute inset-0 opacity-25"
+                        style={{
+                          background: `linear-gradient(to bottom, transparent 40%, ${post.coverColor}cc)`,
+                        }}
+                      />
+                      {/* Tags float over image */}
+                      <div className="absolute bottom-3 left-3 flex flex-wrap gap-1.5">
                         {post.tags.slice(0, 2).map((tag) => (
-                          <span key={tag} className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${tagColor(tag)}`}>
+                          <span key={tag} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 backdrop-blur-sm border border-white/60" style={{ color: post.coverColor }}>
                             {tag}
                           </span>
                         ))}
                       </div>
-                      <h3 className="text-base font-bold text-slate-900 leading-snug flex-1 mb-3">
+                    </div>
+
+                    <div className="p-5 flex flex-col flex-1">
+                      <h3 className="text-[15px] font-extrabold text-slate-900 leading-snug flex-1 mb-2 group-hover:text-indigo-600 transition-colors">
                         {post.title}
                       </h3>
-                      <p className="text-slate-500 text-sm line-clamp-2 mb-5">{post.description}</p>
-                      <div className="flex items-center justify-between text-xs text-slate-400 border-t border-slate-50 pt-4">
+                      <p className="text-slate-500 text-sm line-clamp-2 mb-4">{post.description}</p>
+                      <div className="flex items-center justify-between text-xs text-slate-400 border-t border-slate-50 pt-3.5">
                         <span>{format(new Date(post.date), "MMM d, yyyy")}</span>
                         <span>{post.readingTime}</span>
                       </div>
