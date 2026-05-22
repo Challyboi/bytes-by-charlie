@@ -144,41 +144,72 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right  -  terminal card */}
-          <div className="flex-shrink-0 w-full max-w-sm lg:max-w-md">
-            <div className="bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl">
-              {/* Terminal bar */}
-              <div className="flex items-center gap-2 px-4 py-3 bg-slate-800 border-b border-slate-700">
-                <span className="w-3 h-3 rounded-full bg-red-500" />
-                <span className="w-3 h-3 rounded-full bg-yellow-500" />
-                <span className="w-3 h-3 rounded-full bg-green-500" />
-                <span className="ml-3 text-slate-400 text-xs font-mono">bytes-by-charlie ~ latest</span>
-              </div>
-              {/* Terminal body */}
-              <div className="p-5 font-mono text-sm space-y-2">
-                <p className="text-slate-500">// Latest post</p>
-                {allPosts[0] && (
-                  <>
-                    <p className="text-indigo-400">const <span className="text-white">post</span> = {"{"}</p>
-                    <p className="pl-4 text-emerald-400">title: <span className="text-yellow-300">&quot;{allPosts[0].title.slice(0, 30)}...&quot;</span>,</p>
-                    <p className="pl-4 text-emerald-400">date: <span className="text-yellow-300">&quot;{allPosts[0].date}&quot;</span>,</p>
-                    <p className="pl-4 text-emerald-400">readTime: <span className="text-yellow-300">&quot;{allPosts[0].readingTime}&quot;</span>,</p>
-                    <p className="text-indigo-400">{"}"}</p>
-                  </>
-                )}
-                <p className="text-slate-500 mt-3">// Start reading</p>
-                <p>
-                  <span className="text-pink-400">open</span>
-                  <span className="text-white">(</span>
-                  <span className="text-yellow-300">&quot;bytesbycharlie.vercel.app/blog&quot;</span>
-                  <span className="text-white">)</span>
-                </p>
-                <p className="text-emerald-400 flex items-center gap-1">
-                  ✓ <span className="text-slate-300">Ready. Happy reading.</span>
-                </p>
-              </div>
+          {/* Right  -  latest post preview card */}
+          {allPosts[0] && (
+            <div className="flex-shrink-0 w-full max-w-sm lg:max-w-md">
+              <Link href={`/blog/${allPosts[0].slug}`}>
+                <div className="group bg-white/5 hover:bg-white/8 border border-white/10 hover:border-white/20 rounded-2xl overflow-hidden shadow-2xl transition-all duration-300">
+
+                  {/* Cover image */}
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={allPosts[0].coverImage}
+                      alt={allPosts[0].title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 1024px) 100vw, 448px"
+                    />
+                    {/* Gradient overlay so text is readable */}
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background: `linear-gradient(to bottom, ${allPosts[0].coverColor}33 0%, rgba(15,23,42,0.7) 100%)`,
+                      }}
+                    />
+                    {/* "Latest Post" badge */}
+                    <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/40 backdrop-blur-sm border border-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Latest Post
+                    </div>
+                    {/* Tags bottom-left */}
+                    <div className="absolute bottom-3 left-3 flex flex-wrap gap-1.5">
+                      {allPosts[0].tags.slice(0, 2).map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-white border border-white/25"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Card body */}
+                  <div className="p-5">
+                    <h3 className="text-white font-extrabold text-[15px] leading-snug mb-2 group-hover:text-indigo-300 transition-colors line-clamp-2">
+                      {allPosts[0].title}
+                    </h3>
+                    <p className="text-slate-400 text-sm leading-relaxed line-clamp-2 mb-4">
+                      {allPosts[0].description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs text-slate-500">
+                        {format(new Date(allPosts[0].date), "MMM d, yyyy")}
+                        <span className="mx-1.5">·</span>
+                        {allPosts[0].readingTime}
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 group-hover:text-indigo-300 transition-colors">
+                        Read now
+                        <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
