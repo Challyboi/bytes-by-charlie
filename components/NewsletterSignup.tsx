@@ -78,51 +78,61 @@ export default function NewsletterSignup({
 
   // Banner variant (used on Home & Blog pages)
   return (
-    <section className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 py-16 px-6">
-      <div className="max-w-2xl mx-auto text-center text-white">
-        <div className="text-4xl mb-4">📬</div>
-        <h2 className="text-3xl font-extrabold mb-3">
-          Stay in the Loop
-        </h2>
-        <p className="text-indigo-100 mb-8 text-lg leading-relaxed">
-          Get new posts on AI, automation, and dev tools delivered straight to
-          your inbox. No spam  -  just bytes worth reading.
-        </p>
-
-        {status === "success" ? (
-          <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl px-6 py-4 text-white font-medium text-lg">
-            ✅ {message}
+    <section className="bg-slate-950 dark:bg-slate-900 py-20 px-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-10">
+          {/* Left: text */}
+          <div className="max-w-lg">
+            <p className="text-[11px] font-bold text-indigo-400 uppercase tracking-widest mb-4">
+              Newsletter
+            </p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight">
+              Get bytes worth reading.
+            </h2>
+            <p className="text-slate-400 text-[15px] leading-relaxed">
+              New posts on AI, automation, and dev tools delivered straight to
+              your inbox. No spam - just ideas that make you a better developer.
+            </p>
           </div>
-        ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-          >
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email..."
-              required
-              className="flex-1 px-5 py-3 rounded-full text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-white bg-white placeholder-slate-400"
-            />
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="bg-white text-indigo-700 font-bold px-7 py-3 rounded-full hover:bg-indigo-50 transition-colors disabled:opacity-60 whitespace-nowrap shadow-lg"
-            >
-              {status === "loading" ? "Subscribing..." : "Subscribe Free"}
-            </button>
-          </form>
-        )}
 
-        {status === "error" && (
-          <p className="mt-3 text-pink-200 text-sm">{message}</p>
-        )}
+          {/* Right: form */}
+          <div className="md:min-w-[380px]">
+            {status === "success" ? (
+              <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-5 py-4 text-emerald-400 font-medium">
+                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                {message}
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                  className="flex-1 px-5 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                />
+                <button
+                  type="submit"
+                  disabled={status === "loading"}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3.5 rounded-xl text-sm transition-colors disabled:opacity-60 whitespace-nowrap"
+                >
+                  {status === "loading" ? "Subscribing..." : "Subscribe free"}
+                </button>
+              </form>
+            )}
 
-        <p className="mt-4 text-indigo-200 text-xs">
-          Join readers learning to build smarter with AI. Unsubscribe anytime.
-        </p>
+            {status === "error" && (
+              <p className="mt-3 text-red-400 text-xs">{message}</p>
+            )}
+
+            <p className="mt-3 text-slate-600 text-xs">
+              Unsubscribe anytime. No spam, ever.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
