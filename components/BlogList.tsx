@@ -6,24 +6,24 @@ import { format } from "date-fns";
 import type { PostMeta } from "@/lib/posts";
 
 const TAG_COLORS: Record<string, string> = {
-  javascript: "bg-yellow-50 text-yellow-700 border-yellow-200",
-  typescript: "bg-blue-50 text-blue-700 border-blue-200",
-  react: "bg-cyan-50 text-cyan-700 border-cyan-200",
+  javascript: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  typescript: "bg-blue-100 text-blue-700 border-blue-200",
+  react: "bg-cyan-100 text-cyan-700 border-cyan-200",
   nextjs: "bg-slate-100 text-slate-600 border-slate-200",
-  css: "bg-pink-50 text-pink-700 border-pink-200",
-  nodejs: "bg-green-50 text-green-700 border-green-200",
-  git: "bg-red-50 text-red-700 border-red-200",
-  ai: "bg-violet-50 text-violet-700 border-violet-200",
-  automation: "bg-orange-50 text-orange-700 border-orange-200",
-  tools: "bg-teal-50 text-teal-700 border-teal-200",
-  career: "bg-purple-50 text-purple-700 border-purple-200",
-  beginners: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  frontend: "bg-rose-50 text-rose-700 border-rose-200",
+  css: "bg-pink-100 text-pink-700 border-pink-200",
+  nodejs: "bg-green-100 text-green-700 border-green-200",
+  git: "bg-red-100 text-red-700 border-red-200",
+  ai: "bg-violet-100 text-violet-700 border-violet-200",
+  automation: "bg-orange-100 text-orange-700 border-orange-200",
+  tools: "bg-teal-100 text-teal-700 border-teal-200",
+  career: "bg-purple-100 text-purple-700 border-purple-200",
+  beginners: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  frontend: "bg-rose-100 text-rose-700 border-rose-200",
 };
 
 function tagColor(tag: string) {
   return (
-    TAG_COLORS[tag.toLowerCase()] ?? "bg-indigo-50 text-indigo-700 border-indigo-200"
+    TAG_COLORS[tag.toLowerCase()] ?? "bg-indigo-100 text-indigo-700 border-indigo-200"
   );
 }
 
@@ -53,37 +53,27 @@ export default function BlogList({ posts }: { posts: PostMeta[] }) {
   return (
     <div>
       {/* Search */}
-      <div className="relative mb-6">
-        <svg
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
+      <div className="relative mb-5">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
+          🔍
+        </span>
         <input
           type="text"
           placeholder="Search articles..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-11 pr-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all"
+          className="w-full pl-10 pr-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all"
         />
       </div>
 
       {/* Tag filter */}
-      <div className="flex flex-wrap gap-2 mb-10">
+      <div className="flex flex-wrap gap-2 mb-8">
         <button
           onClick={() => setActiveTag(null)}
-          className={`text-xs font-bold px-4 py-1.5 rounded-full border transition-all ${
+          className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border transition-all ${
             !activeTag
-              ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white"
-              : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500"
+              ? "bg-indigo-600 text-white border-indigo-600"
+              : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-indigo-300"
           }`}
         >
           All ({posts.length})
@@ -92,10 +82,10 @@ export default function BlogList({ posts }: { posts: PostMeta[] }) {
           <button
             key={tag}
             onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-            className={`text-xs font-bold px-4 py-1.5 rounded-full border transition-all ${
+            className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border transition-all ${
               activeTag === tag
-                ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white"
-                : `${tagColor(tag)} hover:opacity-75`
+                ? "bg-indigo-600 text-white border-indigo-600"
+                : `${tagColor(tag)} hover:opacity-80`
             }`}
           >
             {tag}
@@ -104,78 +94,69 @@ export default function BlogList({ posts }: { posts: PostMeta[] }) {
       </div>
 
       {/* Result count */}
-      {(search || activeTag) && filtered.length > 0 && (
-        <p className="text-sm text-slate-400 dark:text-slate-500 mb-8">
-          Showing {filtered.length} of {posts.length} articles
+      {(search || activeTag) && (
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-5">
+          {filtered.length === 0
+            ? "No posts match your search."
+            : `Showing ${filtered.length} of ${posts.length} posts`}
         </p>
       )}
 
       {/* Posts */}
       {filtered.length === 0 ? (
         <div className="text-center py-24 text-slate-400">
-          <p className="text-4xl mb-5">🔍</p>
-          <p className="text-lg font-medium text-slate-500 dark:text-slate-400 mb-2">
-            Nothing found for that search.
-          </p>
+          <p className="text-5xl mb-5">🔍</p>
+          <p className="text-xl font-medium">Nothing found - try a different search.</p>
           <button
             onClick={() => { setSearch(""); setActiveTag(null); }}
-            className="mt-2 text-indigo-600 dark:text-indigo-400 text-sm font-semibold hover:underline"
+            className="mt-4 text-indigo-600 text-sm font-semibold hover:underline"
           >
             Clear filters
           </button>
         </div>
       ) : (
-        <div className="divide-y divide-slate-100 dark:divide-slate-800">
-          {filtered.map((post) => (
-            <Link key={post.slug} href={`/blog/${post.slug}`} className="group block py-8 first:pt-0">
-              <article className="flex flex-col md:flex-row md:items-start gap-5 md:gap-8">
-                {/* Left: color accent */}
+        <div className="space-y-5">
+          {filtered.map((post, i) => (
+            <Link key={post.slug} href={`/blog/${post.slug}`}>
+              <article className="post-card group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-5 items-start hover:border-indigo-100 dark:hover:border-indigo-700">
+                {/* Number */}
                 <div
-                  className="hidden md:block w-1 self-stretch rounded-full flex-shrink-0 transition-all duration-300 group-hover:w-1.5"
-                  style={{ background: post.coverColor, opacity: 0.7 }}
-                />
+                  className="hidden md:flex w-12 h-12 rounded-xl items-center justify-center font-extrabold text-lg flex-shrink-0"
+                  style={{
+                    background: `${post.coverColor}18`,
+                    color: post.coverColor,
+                  }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </div>
 
                 <div className="flex-1 min-w-0">
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1.5 mb-3">
+                  <div className="flex flex-wrap gap-2 mb-3">
                     {post.tags.map((tag) => (
                       <span
                         key={tag}
-                        className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${tagColor(tag)}`}
+                        className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${tagColor(tag)}`}
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
-
-                  {/* Title */}
-                  <h2 className="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2 leading-snug">
+                  <h2 className="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2 leading-snug">
                     {post.title}
                   </h2>
-
-                  {/* Description */}
                   <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed line-clamp-2 mb-4">
                     {post.description}
                   </p>
-
-                  {/* Meta */}
-                  <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
-                    <span>{format(new Date(post.date), "MMMM d, yyyy")}</span>
-                    <span>&middot;</span>
-                    <span>{post.readingTime}</span>
+                  <div className="flex items-center gap-5 text-xs text-slate-400 dark:text-slate-500">
+                    <span>📅 {format(new Date(post.date), "MMMM d, yyyy")}</span>
+                    <span>⏱ {post.readingTime}</span>
                   </div>
                 </div>
 
-                {/* Arrow */}
-                <div className="hidden md:flex items-center self-center flex-shrink-0">
-                  <svg
-                    className="w-5 h-5 text-slate-300 dark:text-slate-600 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
+                <div className="hidden md:flex items-center self-center">
+                  <span className="w-9 h-9 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/40 text-slate-400 group-hover:text-indigo-600 transition-all text-lg">
+                    →
+                  </span>
                 </div>
               </article>
             </Link>

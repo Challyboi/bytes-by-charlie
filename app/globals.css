@@ -53,13 +53,13 @@ html.dark ::-webkit-scrollbar-track { background: #1e293b; }
   background-clip: text;
 }
 
-/* Card hover - subtle lift */
+/* Card hover */
 .post-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 .post-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.08);
+  transform: translateY(-5px);
+  box-shadow: 0 24px 48px -8px rgba(99, 102, 241, 0.18);
 }
 
 /* Glow button */
