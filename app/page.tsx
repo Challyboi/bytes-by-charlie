@@ -35,6 +35,7 @@ const SITE_URL = "https://bytes-by-charlie.vercel.app";
 export default function HomePage() {
   const allPosts = getAllPosts();
   const featured = allPosts.slice(0, 3);
+  const moreToRead = allPosts.slice(3, 9);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -267,6 +268,121 @@ export default function HomePage() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* ── More to Read ── */}
+      {moreToRead.length > 0 && (
+        <section className="max-w-6xl mx-auto px-6 py-16">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-1">
+                More to <span className="gradient-text">Read</span>
+              </h2>
+              <p className="text-slate-500 text-sm">Keep scrolling — there&apos;s plenty more.</p>
+            </div>
+            <Link href="/blog" className="text-indigo-600 font-semibold text-sm hover:underline hidden sm:block">
+              All {allPosts.length} articles →
+            </Link>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            {moreToRead.map((post) => (
+              <Link key={post.slug} href={`/blog/${post.slug}`}>
+                <article className="post-card group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-row hover:border-indigo-100 dark:hover:border-indigo-800 h-full">
+                  {/* Small thumbnail */}
+                  <div className="relative w-24 sm:w-28 flex-shrink-0">
+                    <Image
+                      src={post.coverImage}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="112px"
+                    />
+                    <div
+                      className="absolute inset-0 opacity-30"
+                      style={{ background: `linear-gradient(to right, transparent, ${post.coverColor}44)` }}
+                    />
+                  </div>
+                  {/* Text */}
+                  <div className="flex-1 min-w-0 p-4 flex flex-col justify-between">
+                    <div>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {post.tags.slice(0, 1).map((tag) => (
+                          <span key={tag} className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${tagColor(tag)}`}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <h3 className="text-sm font-extrabold text-slate-900 dark:text-white leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+                        {post.title}
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500 mt-2">
+                      <span>{format(new Date(post.date), "MMM d, yyyy")}</span>
+                      <span>·</span>
+                      <span>{post.readingTime}</span>
+                    </div>
+                  </div>
+                </article>
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile view-all button */}
+          <div className="mt-8 sm:hidden">
+            <Link
+              href="/blog"
+              className="flex items-center justify-center gap-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl transition-colors text-sm"
+            >
+              View all {allPosts.length} articles →
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* ── What you'll find here ── */}
+      <section className="bg-slate-950 text-white py-16 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-extrabold mb-2">
+              What you&apos;ll find <span className="gradient-text">here</span>
+            </h2>
+            <p className="text-slate-400 text-sm">Built for developers who want to keep growing.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              {
+                icon: "🤖",
+                title: "AI & Automation",
+                desc: "Practical guides on Claude Code, n8n, and building AI workflows that actually save time.",
+                color: "from-violet-500/20 to-purple-600/10",
+                border: "border-violet-500/20",
+              },
+              {
+                icon: "⚡",
+                title: "JavaScript & TypeScript",
+                desc: "Deep dives into the JS ecosystem — async patterns, TypeScript tips, and modern tooling.",
+                color: "from-yellow-500/20 to-orange-500/10",
+                border: "border-yellow-500/20",
+              },
+              {
+                icon: "🚀",
+                title: "Career & Productivity",
+                desc: "No-fluff advice on growing as a developer — tools, habits, and mindset shifts that actually work.",
+                color: "from-pink-500/20 to-rose-600/10",
+                border: "border-pink-500/20",
+              },
+            ].map((item) => (
+              <Link href="/blog" key={item.title}>
+                <div className={`rounded-2xl bg-gradient-to-br ${item.color} border ${item.border} p-6 h-full hover:border-opacity-60 transition-all post-card`}>
+                  <span className="text-3xl mb-4 block">{item.icon}</span>
+                  <h3 className="font-extrabold text-white mb-2">{item.title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
