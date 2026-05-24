@@ -1,0 +1,186 @@
+---
+title: "Next.js App Router Patterns That Actually Scale"
+date: "2026-05-24T09:00:00"
+description: "The App Router changed how we build Next.js apps. Here are the patterns that hold up when your codebase grows past the tutorial stage."
+tags: ["nextjs", "react", "web-development"]
+coverColor: "#3b82f6"
+---
+
+The App Router is no longer new. It shipped in Next.js 13, stabilized in 14, and by now most teams are either using it or actively migrating. But a lot of the guidance out there stops at the basics - put "use client" here, fetch data there. That's fine for getting started, but it doesn't tell you how to structure an app that won't turn into a mess six months from now.
+
+Here are the patterns that actually hold up.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80"
+  alt="Code on a monitor showing a React/Next.js application"
+  caption="The App Router introduced a fundamentally different mental model for building React applications."
+/>
+
+## Treat Server Components as the Default, Not the Exception
+
+Most developers think about "use client" the wrong way. They see it as the thing you add when you need interactivity. The better mental model: Server Components are your default, and Client Components are intentional islands of interactivity you opt into deliberately.
+
+This matters for performance. Every Client Component ships JavaScript to the browser. Server Components render on the server and send plain HTML - zero bundle cost. A page that's mostly static content with one interactive button should be mostly Server Components with one small Client Component for the button.
+
+```tsx
+// app/blog/[slug]/page.tsx - Server Component (default)
+// No "use client" directive needed
+
+async function BlogPost({ params }: { params: { slug: string } }) {
+  const post = await fetchPost(params.slug) // Direct async/await - no useEffect
+
+  return (
+    <article>
+      <h1>{post.title}</h1>
+      <PostContent content={post.content} />
+      <LikeButton postId={post.id} /> {/* Only this is a Client Component */}
+    </article>
+  )
+}
+```
+
+<Callout type="fire">Server Components can be async. You can await database calls, API requests, and file reads directly inside your component - no useEffect, no useState, no loading spinner wrangling.</Callout>
+
+## Push Client Components to the Leaves
+
+When you do need "use client" - for `useState`, `useEffect`, event handlers, or browser APIs - push that boundary as far down the tree as possible. This is the single most impactful structural decision you can make.
+
+Bad pattern:
+
+```tsx
+"use client"
+
+// This pulls the entire subtree into the client bundle
+export default function ProductPage({ product }) {
+  const [quantity, setQuantity] = useState(1)
+
+  return (
+    <div>
+      <ProductImage src={product.image} />  {/* Didn't need to be client-side */}
+      <ProductDescription text={product.description} />  {/* Same */}
+      <QuantitySelector value={quantity} onChange={setQuantity} />
+    </div>
+  )
+}
+```
+
+Better pattern:
+
+```tsx
+// app/products/[id]/page.tsx - Server Component
+async function ProductPage({ params }) {
+  const product = await getProduct(params.id)
+
+  return (
+    <div>
+      <ProductImage src={product.image} />       {/* Server Component */}
+      <ProductDescription text={product.description} />  {/* Server Component */}
+      <QuantitySelector productId={product.id} /> {/* Small Client Component */}
+    </div>
+  )
+}
+```
+
+```tsx
+// components/quantity-selector.tsx
+"use client"
+
+export function QuantitySelector({ productId }) {
+  const [quantity, setQuantity] = useState(1)
+  // Only this tiny component is client-side
+}
+```
+
+<Callout type="tip">A component only needs "use client" if it directly uses client-only APIs. Parent components that simply pass props to a Client Component can stay as Server Components - they won't get bundled on the client.</Callout>
+
+## Use Route Groups to Organize Without Affecting URLs
+
+This feature is underused and underrated. Route groups - folders wrapped in parentheses - let you organize your file structure and share layouts without changing the URL.
+
+```
+app/
+  (marketing)/
+    layout.tsx          <- Marketing layout with nav, CTA sections
+    page.tsx            <- yourdomain.com/
+    about/page.tsx      <- yourdomain.com/about
+    pricing/page.tsx    <- yourdomain.com/pricing
+  (app)/
+    layout.tsx          <- App layout with sidebar, user menu
+    dashboard/page.tsx  <- yourdomain.com/dashboard
+    settings/page.tsx   <- yourdomain.com/settings
+```
+
+The parentheses are invisible in URLs but let the marketing pages and app pages have completely different layouts. No hacks, no prop-drilling layout logic through a shared root.
+
+<Callout type="info">Route groups also let you opt specific routes out of a shared layout. If one marketing page needs a full-screen layout without your standard nav, wrap just that page in its own route group.</Callout>
+
+## Co-locate loading.tsx and error.tsx With Every Route Segment
+
+This is the pattern I see skipped most often in real codebases, and it's the one that bites teams hardest in production.
+
+```tsx
+// app/dashboard/loading.tsx
+export default function DashboardLoading() {
+  return <DashboardSkeleton />  // Shown instantly while the page fetches
+}
+```
+
+```tsx
+// app/dashboard/error.tsx
+"use client"  // Error boundaries must be Client Components
+
+export default function DashboardError({ error, reset }) {
+  return (
+    <div>
+      <h2>Something went wrong loading your dashboard.</h2>
+      <button onClick={reset}>Try again</button>
+    </div>
+  )
+}
+```
+
+<Callout type="warning">If you skip error.tsx, a thrown error bubbles up to the nearest error boundary above it - which might be your root layout. That takes down your entire page instead of just the broken section.</Callout>
+
+The loading.tsx file is especially powerful because it uses React Suspense under the hood. The shell of your page renders immediately with the loading state, while the async data fetching happens in the background. Your users see something instantly.
+
+## Fetch Once at the Top, Pass Down
+
+The temptation with Server Components is to fetch data at every level of the tree because now you can. Resist this.
+
+```tsx
+// Fetch at the route level, pass down as props
+async function DashboardPage() {
+  const [user, stats, recentActivity] = await Promise.all([
+    getUser(),
+    getDashboardStats(),
+    getRecentActivity(),
+  ])
+
+  return (
+    <div>
+      <UserGreeting user={user} />
+      <StatsGrid stats={stats} />
+      <ActivityFeed items={recentActivity} />
+    </div>
+  )
+}
+```
+
+Fetching in parallel with `Promise.all` at the route level is faster than waterfalling requests through multiple nested components. It's also much easier to debug - you have one place to look when data is wrong.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&q=80"
+  alt="Developer working on a Next.js application with clean component architecture"
+  caption="Clean component boundaries make the difference between a codebase that scales and one that becomes a burden."
+/>
+
+## The Mental Model That Ties It Together
+
+Every decision in the App Router comes back to one question: where does this code run?
+
+- Server? It can be async, access databases directly, has no bundle cost, but can't use browser APIs or handle user events.
+- Client? It's interactive, has access to the DOM and browser APIs, but ships JavaScript and can't directly access server resources.
+
+Once that boundary is clear in your head, the patterns follow naturally. Server by default, client intentionally, small and at the leaves.
+
+That's the whole game.
