@@ -1,0 +1,158 @@
+---
+title: "Terminal Productivity: Shell Tools That Will Change How You Code"
+date: "2026-05-25T09:00:00"
+description: "The terminal tools and shell tricks that cut hours from my weekly workflow - fzf, ripgrep, aliases, and more."
+tags: ["productivity", "terminal", "developer-tools", "shell"]
+coverColor: "#14b8a6"
+---
+
+Most developers spend 30-40% of their day in the terminal. Yet most of us are still using it exactly the same way we did when we first learned to code - typing full paths, repeating long commands, running `ls` fifty times a day.
+
+The terminal is one of the highest-leverage places to invest in your workflow. A few hours of setup can save you minutes every single day, and those minutes compound.
+
+Here are the tools and tricks that actually made a difference for me.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&q=80"
+  alt="Developer working on code in a terminal window"
+  caption="Your terminal is already powerful - most developers just never unlock it."
+/>
+
+## fzf: The Fuzzy Finder That Changes Everything
+
+If you install only one tool from this post, make it [fzf](https://github.com/junegunn/fzf). It's a command-line fuzzy finder that integrates with your shell history, file navigation, and almost anything else you can pipe into it.
+
+Once installed, pressing `Ctrl+R` to search your command history goes from this:
+
+```bash
+# Old: scroll back through history hoping to find it
+# or: history | grep docker | grep -v grep | tail -20
+```
+
+To this: a live, fuzzy-searchable list of every command you've ever run. Type a few characters, and it narrows instantly.
+
+You also get `Ctrl+T` to fuzzy-find files in your current directory, and `Alt+C` to fuzzy-cd into subdirectories. The time savings here are real.
+
+```bash
+# Install on Mac
+brew install fzf
+$(brew --prefix)/opt/fzf/install
+
+# Install on Linux
+sudo apt-get install fzf
+```
+
+<Callout type="fire">Add this to your .zshrc or .bashrc to preview file contents while fuzzy-finding: `export FZF_CTRL_T_OPTS="--preview 'cat {}'"`. Now you can see the file before opening it.</Callout>
+
+## ripgrep: grep, But Fast and Sane
+
+`ripgrep` (the `rg` command) does what `grep` does, but it respects your `.gitignore`, skips binary files automatically, and is significantly faster on large codebases.
+
+```bash
+# Old grep usage that gets painful in big projects
+grep -r "useEffect" ./src --include="*.tsx"
+
+# ripgrep equivalent - faster, cleaner output, ignores node_modules automatically
+rg "useEffect" --type tsx
+```
+
+The default output is colored and includes filename, line number, and the matching line. You don't need to add a dozen flags to get useful output.
+
+```bash
+# Find all TODO comments across your project
+rg "TODO|FIXME|HACK" --type ts
+
+# Case-insensitive search with context lines
+rg -i "api_key" -C 3
+```
+
+<Callout type="warning">ripgrep respects .gitignore by default, which is great for most searches. But if you need to search inside ignored files (like build output or logs), use the `-u` flag to unrestrict it.</Callout>
+
+## Shell Aliases That Pay Off Daily
+
+The ROI on aliases is absurd. You spend 5 minutes writing them once, and they save keystrokes for years.
+
+```bash
+# Add these to your ~/.zshrc or ~/.bashrc
+
+# Navigation
+alias ..="cd .."
+alias ...="cd ../.."
+alias ~="cd ~"
+alias desk="cd ~/Desktop"
+
+# Git shortcuts (these save the most time)
+alias gs="git status"
+alias ga="git add ."
+alias gc="git commit -m"
+alias gp="git push"
+alias gpl="git pull"
+alias gb="git branch"
+alias gco="git checkout"
+alias gl="git log --oneline --graph --decorate -20"
+
+# npm/node
+alias ni="npm install"
+alias nr="npm run"
+alias ns="npm start"
+alias nd="npm run dev"
+
+# Safer defaults
+alias rm="rm -i"       # prompt before deleting
+alias cp="cp -i"       # prompt before overwriting
+alias mv="mv -i"       # same for move
+```
+
+Reload your shell after saving: `source ~/.zshrc`
+
+<Callout type="tip">Group your aliases by category and add a comment header above each group. When you come back to edit them six months later, you'll thank yourself.</Callout>
+
+## z: Jump to Directories You've Been Before
+
+The `z` command (or `zoxide` for a Rust-based version) tracks your most-visited directories and lets you jump to them with a partial name.
+
+```bash
+# Instead of:
+cd /Users/charlie/projects/clients/acme-corp/frontend/src/components
+
+# After you've visited it once, just:
+z components
+# or even:
+z acme comp
+```
+
+It learns your patterns over time. After a week of use, navigating your project structure gets dramatically faster.
+
+```bash
+# Install zoxide (faster, more modern version)
+brew install zoxide
+
+# Add to .zshrc
+eval "$(zoxide init zsh)"
+```
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&q=80"
+  alt="Productivity setup with multiple monitors showing terminal and code editor"
+  caption="A well-configured terminal setup multiplies your output without adding noise."
+/>
+
+## A Few More Worth Knowing
+
+**`bat`** - a `cat` replacement with syntax highlighting and git integration. Reading a file in the terminal no longer means squinting at monochrome text.
+
+**`tldr`** - simplified man pages written by the community. Instead of reading through 300 lines of `man git`, `tldr git` gives you the 10 commands you actually use.
+
+**`httpie`** - a friendlier alternative to curl for API testing. `http GET api.example.com/users` beats curling with flags every time.
+
+```bash
+brew install bat tldr httpie
+```
+
+<YoutubeEmbed id="T5SZpUuMl5Q" title="Developer Productivity Tips for Your Terminal Workflow" />
+
+## The Setup Investment Is Worth It
+
+None of this is complicated. Most of it is an afternoon of reading and installing, then a few weeks of muscle memory building. But developers who invest in their tooling consistently outperform those who don't - not because they're smarter, but because they spend more time thinking and less time fighting their environment.
+
+Pick one tool from this list, install it today, and use it for a week. Then come back for the next one.
