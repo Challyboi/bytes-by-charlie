@@ -5,31 +5,67 @@
    within ~60 seconds of this function completing.
 ───────────────────────────────────────────────────────────── */
 
+// Give Vercel up to 60 seconds before timing out (Hobby plan allows 60s)
+export const maxDuration = 60;
+
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GITHUB_REPO = "Challyboi/bytes-by-charlie";
 const GITHUB_API = "https://api.github.com";
 
 const TOPICS = [
+  // JavaScript & TypeScript
   "React performance optimisation and useMemo",
-  "Next.js App Router patterns and best practices",
-  "Building n8n automation workflows step by step",
-  "Claude Code agentic workflows for developers",
   "JavaScript async/await patterns and error handling",
   "TypeScript generics explained with real examples",
-  "Git branching strategies for solo developers",
-  "AI tools that save developers hours every week",
-  "Email marketing automation with Klaviyo",
-  "How to build a second brain as a developer",
-  "CSS grid layout patterns every developer should know",
-  "Node.js tips for building fast APIs",
-  "Developer productivity with keyboard shortcuts and tooling",
-  "How to think in systems as a developer",
-  "Building in public - lessons from shipping real projects",
+  "JavaScript array methods you should use more",
+  "TypeScript utility types every developer should know",
+  "JavaScript closures and scope explained clearly",
+  "How to write cleaner JavaScript with modern syntax",
+  "TypeScript strict mode - what it catches and why it matters",
+  "JavaScript event loop explained with real examples",
+  "Mastering JavaScript destructuring and spread",
+  // React & Next.js
+  "Next.js App Router patterns and best practices",
+  "React Server Components explained simply",
+  "React hooks explained - useState to useReducer",
+  "Next.js image optimisation tips for faster sites",
+  "Building reusable React component libraries",
+  "React context vs Zustand - when to use each",
+  "Next.js middleware and edge functions explained",
+  "How to handle forms in React without a library",
+  // AI & Automation
+  "Building n8n automation workflows step by step",
+  "Claude Code agentic workflows for developers",
   "Prompt engineering tips for developers using Claude",
   "n8n vs Zapier - when to use each and why",
-  "React Server Components explained simply",
-  "Virtual assistant tools and automation for freelancers",
-  "JavaScript array methods you should use more",
+  "How to build an AI content pipeline with n8n",
+  "Using Claude API to automate repetitive dev tasks",
+  "AI-powered code review with Claude Code",
+  "Building a personal AI assistant with n8n and Claude",
+  "How to use webhooks in n8n for real-time automation",
+  // Git & Workflow
+  "Git branching strategies for solo developers",
+  "Git rebase vs merge - the honest breakdown",
+  "How to write better Git commit messages",
+  "Using Git hooks to automate your workflow",
+  // Career & Productivity
+  "How to build a second brain as a developer",
+  "Building in public - lessons from shipping real projects",
+  "Developer productivity with keyboard shortcuts and tooling",
+  "How to think in systems as a developer",
+  "How to get your first developer job without a degree",
+  "From junior to mid-level developer - what actually changes",
+  "How to review code well as a developer",
+  "Side project to product - the developer's playbook",
+  // Tools & CSS
+  "CSS grid layout patterns every developer should know",
+  "CSS variables and design tokens for real projects",
+  "Node.js tips for building fast APIs",
+  "Email marketing automation with Klaviyo",
+  "AI tools that save developers hours every week",
+  "Tailwind CSS tips that make styling faster",
+  "Docker basics every developer should know",
+  "How to set up ESLint and Prettier the right way",
 ];
 
 const COVER_COLORS = [

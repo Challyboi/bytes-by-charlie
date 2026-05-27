@@ -1,0 +1,173 @@
+---
+title: "React Server Components vs Client Components: A Practical Guide"
+date: "2026-05-27"
+description: "Server Components and Client Components look similar but work completely differently. Here is exactly when to use each and why getting it wrong tanks your app's performance."
+tags: ["react", "nextjs", "frontend"]
+coverColor: "#0ea5e9"
+---
+
+If you have been building with Next.js App Router, you have already been using React Server Components whether you knew it or not. Every component in the App Router is a Server Component by default. But most developers just slap `"use client"` on everything the moment they need a click handler, and that is leaving serious performance on the table.
+
+Let me break down exactly how these two component types work, when to use each, and the mental model that makes this click.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&q=80"
+  alt="React code on a screen"
+  caption="React Server Components change how you think about the component tree."
+/>
+
+---
+
+## What Actually Happens With Each Type
+
+**Server Components** run on the server during the request. They can read from databases, access the filesystem, use environment variables directly, and fetch data without waterfall issues. They send only HTML to the client - no JavaScript bundle for the component itself.
+
+**Client Components** run in the browser. They have access to state, effects, event listeners, browser APIs, and anything that requires interactivity. They do ship JavaScript to the client.
+
+The key thing most tutorials miss: **Client Components still render on the server too** - they just also hydrate on the client. So `"use client"` does not mean "skip server rendering." It means "this component needs client-side JavaScript too."
+
+## The Default That Surprises People
+
+In the Next.js App Router, everything starts as a Server Component:
+
+```tsx
+// This is a Server Component by default
+// It can be async, fetch data, read env vars
+export default async function ProductPage({ params }: { params: { id: string } }) {
+  const product = await db.product.findUnique({ where: { id: params.id } });
+
+  return (
+    <div>
+      <h1>{product.name}</h1>
+      <p>{product.price}</p>
+    </div>
+  );
+}
+```
+
+No `useState`, no `useEffect`, no loading states. Just async/await and data. The component never runs in the browser, so its bundle size is zero.
+
+```tsx
+// This is a Client Component - needs interactivity
+"use client";
+
+import { useState } from "react";
+
+export function AddToCartButton({ productId }: { productId: string }) {
+  const [added, setAdded] = useState(false);
+
+  return (
+    <button onClick={() => setAdded(true)}>
+      {added ? "Added!" : "Add to Cart"}
+    </button>
+  );
+}
+```
+
+<Callout type="tip">
+The `"use client"` directive marks the **boundary** between server and client rendering. Once you add it, all components imported by that file also become client components. Keep this boundary as deep in the tree as possible.
+</Callout>
+
+## The Practical Rule: Push Interactivity Down
+
+The biggest mistake is hoisting `"use client"` too high in the tree. If you put it on a layout or a page wrapper, everything inside pays the JavaScript cost.
+
+Instead, keep your page-level components as Server Components and push the interactive bits down to small leaf components:
+
+```
+Page (Server) -> Fetches data, no JS bundle
+  Layout (Server) -> Structure only
+    ProductInfo (Server) -> Displays data
+    AddToCartButton (Client) -> Only this needs JS
+    ReviewList (Server) -> Static display
+      ReviewForm (Client) -> Form input needs JS
+```
+
+This pattern means your page loads fast, data is fetched server-side, and only the tiny interactive pieces ship JavaScript.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1618761714954-0b8cd0026356?w=1200&q=80"
+  alt="Component architecture diagram"
+  caption="Keep Server Components at the top and push Client Components to the leaves."
+/>
+
+## When You Must Use Client Components
+
+Use `"use client"` when you need:
+
+- `useState`, `useReducer`, `useContext`
+- `useEffect`, `useLayoutEffect`
+- Event handlers (`onClick`, `onChange`, etc.)
+- Browser APIs (`window`, `localStorage`, `navigator`)
+- Third-party libraries that depend on any of the above
+
+```tsx
+"use client";
+
+import { useState, useEffect } from "react";
+
+export function ThemeToggle() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme") as "light" | "dark";
+    if (saved) setTheme(saved);
+  }, []);
+
+  const toggle = () => {
+    const next = theme === "light" ? "dark" : "light";
+    setTheme(next);
+    localStorage.setItem("theme", next);
+    document.documentElement.classList.toggle("dark");
+  };
+
+  return (
+    <button onClick={toggle}>
+      {theme === "light" ? "Dark mode" : "Light mode"}
+    </button>
+  );
+}
+```
+
+<Callout type="info">
+You can pass Server Component output as **children** to a Client Component. This is how you compose them - the Client Component wraps interactive UI around server-rendered content without forcing that content into the client bundle.
+</Callout>
+
+## The Composition Pattern Worth Knowing
+
+```tsx
+// Server Component
+export default async function Page() {
+  const data = await fetchData();
+
+  return (
+    // Client Component receives server-rendered children
+    <InteractiveWrapper>
+      <ServerRenderedContent data={data} />
+    </InteractiveWrapper>
+  );
+}
+```
+
+`InteractiveWrapper` is a Client Component but `ServerRenderedContent` stays a Server Component. This pattern lets you have a draggable panel, modal, or accordion whose content is still server-rendered.
+
+## A Simple Decision Tree
+
+Ask yourself these questions in order:
+
+1. Does this component fetch data from a database or filesystem? **Server Component.**
+2. Does it use state, effects, or event handlers? **Client Component.**
+3. Does it use a third-party library that uses hooks or browser APIs? **Client Component.**
+4. Does it just display data passed as props? **Server Component.**
+
+<Callout type="fire">
+Audit your codebase and count how many `"use client"` directives you have at the page or layout level. Every one of those is a missed opportunity to reduce your JavaScript bundle and speed up your app.
+</Callout>
+
+## The Performance Payoff
+
+Moving data fetching to Server Components eliminates client-side waterfalls. Instead of fetch-on-load followed by a loading spinner, the data arrives with the HTML. Your Largest Contentful Paint drops, your bundle shrinks, and users see real content faster.
+
+This is not a micro-optimisation. On slow mobile connections, the difference between a Server Component and a Client Component doing the same fetch is often seconds, not milliseconds.
+
+Pick the right tool for each component, and your app will feel noticeably faster. Start by auditing one page - move the data fetching up to a Server Component and push the interactive pieces down. You will see the difference immediately. 🚀
