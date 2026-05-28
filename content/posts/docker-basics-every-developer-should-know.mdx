@@ -1,0 +1,130 @@
+---
+title: "Docker Basics Every Developer Should Know"
+date: "2026-05-28T07:19:03"
+description: "Get started with Docker and take your development skills to the next level with these essential basics. Learn how to use Docker to streamline your workflow and improve collaboration."
+tags: ["docker", "javascript", "career"]
+coverColor: "#f59e0b"
+---
+
+As a developer, you're likely no stranger to the concept of containerization and its benefits. However, if you're new to Docker, getting started can seem overwhelming. With so many resources available, it's hard to know where to begin. In this post, we'll cover the essential Docker basics every developer should know to get started with confidence.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&q=80"
+  alt="A person working on a laptop with a Docker container running in the background"
+  caption="Streamline your development workflow with Docker"
+/>
+
+---
+
+## What is Docker?
+
+Docker is a containerization platform that allows you to package, ship, and run applications in containers. Containers are lightweight and portable, making it easy to deploy applications across different environments. With Docker, you can create a consistent development environment, ensuring that your application works as expected, regardless of the underlying infrastructure.
+
+<Callout type="fire">
+One of the biggest advantages of Docker is its ability to isolate applications from each other, making it easier to manage dependencies and avoid conflicts.
+</Callout>
+
+## Installing Docker
+
+To get started with Docker, you'll need to install it on your machine. The installation process varies depending on your operating system. For Windows and macOS, you can download the Docker Desktop application, which provides a graphical user interface for managing containers. For Linux, you can install Docker using your distribution's package manager.
+
+```bash
+# Install Docker on Ubuntu
+sudo apt update
+sudo apt install docker.io
+```
+
+## Basic Docker Commands
+
+Once you have Docker installed, you can start using it to create and manage containers. Here are some basic Docker commands to get you started:
+
+* `docker run`: Creates a new container from an image and starts it.
+* `docker ps`: Lists all running containers.
+* `docker stop`: Stops a running container.
+* `docker rm`: Removes a stopped container.
+
+```bash
+# Run a new container from the official Node.js image
+docker run -it node
+
+# List all running containers
+docker ps
+
+# Stop a running container
+docker stop container_id
+
+# Remove a stopped container
+docker rm container_id
+```
+
+<Callout type="tip">
+Use the `-it` flag with `docker run` to start a new container in interactive mode, allowing you to access the container's shell.
+</Callout>
+
+## Docker Images
+
+Docker images are the foundation of containers. An image is a read-only template that contains the application code, dependencies, and configuration. You can create your own images using a Dockerfile, which is a text file that defines the build process.
+
+```dockerfile
+# Create a new Dockerfile for a Node.js application
+FROM node:14
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the application code
+COPY . /app
+
+# Install dependencies
+RUN npm install
+
+# Expose the port
+EXPOSE 3000
+
+# Start the application
+CMD ["node", "index.js"]
+```
+
+## Docker Volumes
+
+Docker volumes provide a way to persist data across container restarts. You can create a volume using the `docker volume create` command and then mount it to a container using the `-v` flag.
+
+```bash
+# Create a new volume
+docker volume create my-volume
+
+# Mount the volume to a container
+docker run -v my-volume:/app/data -it node
+```
+
+<Callout type="info">
+Use Docker volumes to persist data that needs to be preserved across container restarts, such as database files or user data.
+</Callout>
+
+## Docker Compose
+
+Docker Compose is a tool for defining and running multi-container Docker applications. With Compose, you can define a configuration file that specifies the services, networks, and volumes for your application.
+
+```yml
+# Create a new docker-compose.yml file
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://user:password@db:5432/database
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+```
+
+## Closing Thoughts
+
+Docker is a powerful tool for streamlining your development workflow and improving collaboration. By mastering the basics of Docker, you can create consistent development environments, manage dependencies, and deploy applications with confidence. Start exploring Docker today and take your development skills to the next level.
+Master Docker and transform your development workflow forever 🚀
