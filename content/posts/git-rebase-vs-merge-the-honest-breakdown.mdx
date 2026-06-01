@@ -1,0 +1,79 @@
+---
+title: "Git rebase vs merge - the honest breakdown"
+date: "2026-06-01T07:47:15"
+description: "Learn the difference between Git rebase and merge, and how to use them effectively in your workflow. Git rebase vs merge is a common debate among developers, and in this post, we'll explore the pros and cons of each approach."
+tags: ["git", "javascript", "beginners"]
+coverColor: "#f59e0b"
+---
+
+When it comes to managing changes in a Git repository, two commands often come up in conversation: rebase and merge. Both are used to integrate changes from one branch into another, but they work in different ways and have different use cases. If you're new to Git or just looking to improve your workflow, understanding the difference between rebase and merge is crucial. 
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1488229297570-58520851e868?w=1200&q=80"
+  alt="A developer working on a Git repository"
+  caption="A developer working on a Git repository, deciding between rebase and merge."
+/>
+
+---
+
+## What is Git Merge
+
+Git merge is a command that integrates changes from one branch into another. When you run `git merge`, Git creates a new merge commit that combines the changes from the two branches. This commit has two parent commits: the latest commit from the current branch and the latest commit from the branch being merged. 
+
+For example, let's say you're working on a feature branch called `feature/new-feature` and you want to merge the changes from the `main` branch into your feature branch. You would run the following commands:
+```bash
+git checkout feature/new-feature
+git merge main
+```
+This will create a new merge commit in your feature branch that combines the changes from the `main` branch.
+
+<Callout type="fire">
+Key insight: Git merge creates a new commit that combines the changes from two branches, preserving the commit history.
+</Callout>
+
+## What is Git Rebase
+
+Git rebase is a command that replays the changes from one branch onto another. When you run `git rebase`, Git replays the commits from the current branch onto the branch being rebased. This creates a new set of commits that are identical to the original commits, but with new commit hashes. 
+
+For example, let's say you're working on a feature branch called `feature/new-feature` and you want to rebase the changes from the `main` branch into your feature branch. You would run the following commands:
+```bash
+git checkout feature/new-feature
+git rebase main
+```
+This will replay the commits from your feature branch onto the `main` branch, creating a new set of commits that are identical to the original commits.
+
+<Callout type="tip">
+Practical tip: Use `git rebase -i` to interactively rebase and edit commits, such as squashing or reordering commits.
+</Callout>
+
+## Git Rebase vs Merge: Pros and Cons
+
+Both Git rebase and merge have their pros and cons. Here are some key points to consider:
+
+* Git merge:
+	+ Pros: preserves the commit history, easy to use, and creates a clear record of changes.
+	+ Cons: can create complex commit histories, and the resulting merge commit can be difficult to understand.
+* Git rebase:
+	+ Pros: creates a linear commit history, easy to read and understand, and can be used to squash or edit commits.
+	+ Cons: can be difficult to use, especially for beginners, and can create conflicts if not used carefully.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=1200&q=80"
+  alt="A comparison of Git rebase and merge"
+  caption="A comparison of Git rebase and merge, highlighting the pros and cons of each approach."
+/>
+
+## Best Practices for Using Git Rebase and Merge
+
+Here are some best practices for using Git rebase and merge:
+
+* Use `git merge` for merging changes from a feature branch into the main branch.
+* Use `git rebase` for rebasing a feature branch onto the main branch, especially if you want to create a linear commit history.
+* Use `git rebase -i` to interactively rebase and edit commits.
+* Always pull the latest changes from the remote repository before merging or rebasing.
+* Use `git status` and `git log` to verify the changes and commit history before and after merging or rebasing.
+
+## Conclusion
+
+In conclusion, Git rebase and merge are both powerful commands that can help you manage changes in your Git repository. By understanding the pros and cons of each approach and following best practices, you can use these commands effectively to create a clean and efficient workflow.
+You should now be able to decide between Git rebase and merge with confidence 🚀
