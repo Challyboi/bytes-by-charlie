@@ -1,0 +1,108 @@
+---
+title: "How to Review Pull Requests Like a Senior Developer"
+date: "2026-06-04T08:00:00"
+description: "Code review is one of the highest-leverage activities on any engineering team. Here's how senior developers actually approach pull requests."
+tags: ["git", "code-review", "developer-career", "best-practices"]
+coverColor: "#10b981"
+---
+
+Pull request reviews are where junior and senior developers look most different. Not because seniors know more syntax - they don't remember everything either - but because they know *what to look for* and how to communicate about it without creating friction on the team.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80"
+  alt="Code on a computer screen"
+  caption="Good code review is a skill that separates good developers from great ones."
+/>
+
+## Start With the Big Picture, Not the Details
+
+Most people open a PR and immediately start reading line by line. Seniors don't. They start with the PR description, the linked ticket, and a high-level scan of the file changes.
+
+You want to answer three questions before reading a single line of code:
+
+1. **Does this solve the right problem?** A perfectly written fix for the wrong issue is still a bad PR.
+2. **Is the scope right?** PRs that touch 12 unrelated files are a red flag. If the scope has crept, say so early.
+3. **Is the approach sound?** Before reviewing implementation, confirm the architecture decision makes sense. You don't want to approve the wrong approach just because the code is clean.
+
+If the approach is wrong, say it before leaving line comments. Don't nitpick code that should be rewritten anyway.
+
+<Callout type="fire">Review the strategy first. If the high-level approach is wrong, line-level comments are wasted effort for both of you.</Callout>
+
+## What to Actually Look For in the Code
+
+Once you're satisfied with the approach, go through the code. Here's the mental model that works:
+
+### Correctness first
+
+Will this code do what it says? Look for edge cases that aren't handled - null/undefined values, off-by-one errors, and race conditions in async code.
+
+```typescript
+// This looks fine at first glance
+async function getUser(id: string) {
+  const user = await db.users.findOne(id);
+  return user.name; // Will throw if user is null
+}
+
+// A reviewer who's paying attention catches this
+async function getUser(id: string) {
+  const user = await db.users.findOne(id);
+  if (!user) throw new Error(`User ${id} not found`);
+  return user.name;
+}
+```
+
+The first version crashes in production when a record doesn't exist. The second won't. That's the kind of thing you're watching for.
+
+### Readability and maintainability
+
+Can the next developer - or the same developer in 6 months - understand what this code does? Long functions, deeply nested logic, and clever one-liners that take two minutes to decode are all worth calling out. You're not being pedantic. You're preventing future bugs.
+
+<Callout type="tip">When leaving readability feedback, suggest an alternative. "This is hard to read" is less useful than "What if we extracted this into a calculateDiscount() function?"</Callout>
+
+### Security and data handling
+
+Check for SQL injection, XSS vectors, exposed secrets, and improper input validation. For any code touching user input or external data, assume the worst and work backwards.
+
+### Tests
+
+Missing tests for a new feature is a legitimate reason to block a PR. Check that tests cover the happy path, edge cases, and error handling - not just the scenario the developer was thinking about when they wrote the code.
+
+<Callout type="warning">Be cautious approving PRs that add tests after the fact with no changes to the implementation. Confirm the tests would have caught the actual bug they claim to cover.</Callout>
+
+## How to Give Feedback Without Creating Friction
+
+This is where most developers have room to grow. Technically correct feedback delivered poorly creates resentment, slows down future reviews, and makes people dread sending you their code.
+
+**Separate blocking from non-blocking comments.** Use a prefix like `[blocking]` or `[nit]` so the author knows what must change before you'll approve. Nits are optional. Being unclear about this wastes everyone's time on follow-up conversations.
+
+**Ask questions instead of making accusations.** "Why is this using a global variable?" lands differently than "I noticed this uses a global variable - was there a reason we didn't pass it as a prop instead?" The second opens a conversation. The first puts someone on the defensive.
+
+**Acknowledge good work.** If someone solved a tricky problem cleanly, say so. Positive feedback reinforces the behavior you want to see more of, and it makes people more receptive to critical notes.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80"
+  alt="Developers collaborating at a desk"
+  caption="Code review is a team sport. The goal is better software, not proving who's smarter."
+/>
+
+## The Checklist in Your Head
+
+Before submitting a review, run through this:
+
+- Does the code do what the ticket says it should?
+- Are there edge cases that aren't handled?
+- Are tests adequate, and do they actually test failure conditions?
+- Is there any security exposure?
+- Will this perform at scale, or are there obvious N+1 queries or expensive operations in hot paths?
+- Did I clearly mark which comments are blockers and which are suggestions?
+- Is my feedback actionable, or am I just venting?
+
+That last one matters. If you can't describe what a better version looks like, reconsider whether the comment is useful at all.
+
+<Callout type="info">Timebox your reviews. A PR that takes two hours to review is probably too large. Flag it and suggest breaking it up next time.</Callout>
+
+## Code Review Is a Team Skill
+
+Your goal isn't to catch every possible error before it ships. It's to make the codebase incrementally better over time and help your teammates write stronger code. That means being thorough, being clear, and being direct without being harsh.
+
+The best code reviewers make people *want* to get their code reviewed. That's the real benchmark.

@@ -1,0 +1,206 @@
+---
+title: "Stop Skipping Tests: A Practical Guide to Testing JavaScript with Vitest"
+date: "2026-05-31T09:00:00"
+description: "Testing feels like extra work until a production bug costs you hours of panic debugging. Here's how to get started with Vitest and write tests that actually protect your code."
+tags: ["javascript", "testing", "vitest", "developer-tools"]
+coverColor: "#10b981"
+---
+
+Most developers skip writing tests. Then one day a "harmless refactor" breaks something in production, the Slack messages start rolling in, and you spend three hours tracing a bug that a ten-line test would have caught in seconds. Sound familiar?
+
+Testing is not optional if you care about shipping reliable software. The good news: with Vitest, it's faster and less painful than it's ever been.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80"
+  alt="Code on a laptop screen in a dark environment"
+  caption="Clean code is great. Tested code is better."
+/>
+
+## Why Vitest and Not Jest?
+
+Jest has been the default JavaScript testing framework for years, and it's fine. But Vitest is the upgrade most projects should make in 2025.
+
+Here's what makes Vitest worth switching to:
+
+- **Native ESM support** - no more transform config headaches
+- **Vite-powered** - reuses your existing Vite config, so setup is trivial if you're already on Vite
+- **Faster cold starts** - significantly quicker than Jest on large test suites
+- **Jest-compatible API** - `describe`, `it`, `expect` all work the same way
+
+If you're already using Jest, the migration is mostly a find-and-replace on config files. The test syntax itself is nearly identical.
+
+<Callout type="info">Vitest is the default test runner for projects scaffolded with `create-vite` and is the recommended choice for Nuxt 3 and SvelteKit. React projects using Vite should switch from Jest.</Callout>
+
+## Setting Up Vitest
+
+Install it as a dev dependency:
+
+```bash
+npm install -D vitest
+```
+
+Add a minimal config at `vitest.config.ts`:
+
+```ts
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    environment: 'node', // or 'jsdom' for browser-like tests
+    globals: true,       // use describe/it/expect without imports
+  },
+})
+```
+
+Add scripts to `package.json`:
+
+```json
+{
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
+    "coverage": "vitest run --coverage"
+  }
+}
+```
+
+Run `npm test` and Vitest starts in watch mode - it re-runs only the files affected by your changes. This alone makes it feel snappier than Jest.
+
+## Writing Tests That Actually Matter
+
+Here's where most developers go wrong: they test implementation details instead of behavior. Testing how a function works internally makes your tests brittle. Test what it produces.
+
+Take a utility function like this:
+
+```ts
+// utils/formatCurrency.ts
+export function formatCurrency(amount: number, currency = 'USD'): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+  }).format(amount)
+}
+```
+
+A good test covers the behavior you care about:
+
+```ts
+// utils/formatCurrency.test.ts
+import { describe, it, expect } from 'vitest'
+import { formatCurrency } from './formatCurrency'
+
+describe('formatCurrency', () => {
+  it('formats USD by default', () => {
+    expect(formatCurrency(1000)).toBe('$1,000.00')
+  })
+
+  it('handles zero', () => {
+    expect(formatCurrency(0)).toBe('$0.00')
+  })
+
+  it('supports other currencies', () => {
+    expect(formatCurrency(50, 'EUR')).toBe('€50.00')
+  })
+
+  it('handles negative amounts', () => {
+    expect(formatCurrency(-250)).toBe('-$250.00')
+  })
+})
+```
+
+Notice: no mocking of `Intl.NumberFormat`, no testing internal state. Just inputs and outputs.
+
+<Callout type="fire">Test the behavior your users or callers depend on - not the internal steps that produce it. If you can refactor the internals without changing a single test, your tests are well-written.</Callout>
+
+## Handling Async Code
+
+Async is where new testers often get tripped up. Vitest handles it cleanly - just use `async/await` in your test functions.
+
+```ts
+import { describe, it, expect, vi } from 'vitest'
+
+// A function that fetches user data
+async function getUser(id: string) {
+  const res = await fetch(`/api/users/${id}`)
+  if (!res.ok) throw new Error('User not found')
+  return res.json()
+}
+
+describe('getUser', () => {
+  it('returns user data for a valid ID', async () => {
+    // Mock fetch so we don't hit a real API
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ id: '123', name: 'Charlie' }),
+    })
+
+    const user = await getUser('123')
+    expect(user.name).toBe('Charlie')
+  })
+
+  it('throws when the user is not found', async () => {
+    global.fetch = vi.fn().mockResolvedValue({ ok: false })
+
+    await expect(getUser('999')).rejects.toThrow('User not found')
+  })
+})
+```
+
+The `vi.fn()` API replaces the Jest `jest.fn()` pattern - same concept, different namespace.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&q=80"
+  alt="Developer working productively with multiple monitors"
+  caption="A solid test suite means you can ship changes fast without second-guessing yourself."
+/>
+
+## What to Test (And What to Skip)
+
+You don't need to test everything. Chasing 100% coverage often produces shallow tests that check trivial paths and add maintenance burden without real protection.
+
+Prioritize testing:
+
+- **Business logic** - any function that calculates, transforms, or validates data
+- **Edge cases** - zero, null, empty arrays, extremely large inputs
+- **Error paths** - what happens when things go wrong
+- **Shared utilities** - functions used across many parts of the codebase
+
+Skip or deprioritize:
+
+- Third-party library internals (they test their own code)
+- Simple getters and setters with no logic
+- UI snapshots that change constantly
+
+<Callout type="tip">If writing a test feels harder than writing the code itself, that's a signal your function is doing too much. Break it apart until the pieces are easy to test independently.</Callout>
+
+## Vitest's Best Hidden Feature: In-Source Testing
+
+Vitest supports writing tests inside your source files using `import.meta.vitest`. It strips them out in production builds automatically.
+
+```ts
+// utils/clamp.ts
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max)
+}
+
+if (import.meta.vitest) {
+  const { it, expect } = import.meta.vitest
+  it('clamps values to the range', () => {
+    expect(clamp(150, 0, 100)).toBe(100)
+    expect(clamp(-10, 0, 100)).toBe(0)
+    expect(clamp(50, 0, 100)).toBe(50)
+  })
+}
+```
+
+For small utility files, keeping tests co-located with the code removes the mental overhead of jumping between files.
+
+<Callout type="warning">100% test coverage is a vanity metric. A codebase with 70% coverage on the right functions is safer than one with 100% coverage on trivial paths. Cover what matters, not everything.</Callout>
+
+## Start Small, Stay Consistent
+
+You don't need a perfect test suite on day one. Pick one module - a utility file, a validation function, an API handler - and write tests for it this week. Then do another next week.
+
+Tests compound over time. Every function you cover is one less thing to manually verify before a deploy. Over months, you build a safety net that lets you refactor and ship without fear.
+
+Write the test. Ship with confidence.
