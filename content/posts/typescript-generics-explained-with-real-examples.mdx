@@ -1,0 +1,125 @@
+---
+title: "TypeScript Generics Explained with Real Examples"
+date: "2026-06-06T07:39:55"
+description: "Learn how to use TypeScript generics to write reusable and type-safe code with practical examples and tips."
+tags: ["typescript", "javascript", "beginners"]
+coverColor: "#f59e0b"
+---
+
+When working with TypeScript, you often come across situations where you need to write functions or classes that can work with multiple types. This is where generics come in - a powerful feature that allows you to write reusable and type-safe code. In this article, we'll explore what TypeScript generics are, how they work, and provide real examples to get you started.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80"
+  alt="TypeScript logo on a screen"
+  caption="TypeScript is a statically typed language that helps you catch errors early."
+/>
+
+---
+
+## Introduction to Generics
+
+Generics are a way to create reusable functions or classes that can work with multiple types. They allow you to define a type parameter that can be substituted with a specific type when you use the function or class. This approach helps you avoid duplicating code and ensures that your code is type-safe.
+
+For example, consider a simple function that takes an array of values and returns the first element:
+```typescript
+function firstElement(arr: any[]) {
+  return arr[0];
+}
+```
+This function works, but it has a major drawback - it uses the `any` type, which means you lose type safety. With generics, you can rewrite this function to work with any type:
+```typescript
+function firstElement<T>(arr: T[]) {
+  return arr[0];
+}
+```
+In this example, `T` is a type parameter that can be substituted with any type. When you use the `firstElement` function, you can specify the type of `T`:
+```typescript
+const numbers = [1, 2, 3];
+const firstNumber = firstElement<number>(numbers); // firstNumber is a number
+
+const strings = ['a', 'b', 'c'];
+const firstString = firstElement<string>(strings); // firstString is a string
+```
+<Callout type="fire">
+Key insight: Generics help you write reusable and type-safe code by allowing you to define type parameters that can be substituted with specific types.
+</Callout>
+
+## Using Generics with Classes
+
+Generics are not limited to functions - you can also use them with classes. Consider a simple `Container` class that holds a value:
+```typescript
+class Container {
+  private value: any;
+
+  constructor(value: any) {
+    this.value = value;
+  }
+
+  getValue() {
+    return this.value;
+  }
+}
+```
+This implementation has the same problem as the `firstElement` function - it uses the `any` type, which means you lose type safety. With generics, you can rewrite the `Container` class to work with any type:
+```typescript
+class Container<T> {
+  private value: T;
+
+  constructor(value: T) {
+    this.value = value;
+  }
+
+  getValue(): T {
+    return this.value;
+  }
+}
+```
+Now you can create a `Container` instance with a specific type:
+```typescript
+const numberContainer = new Container<number>(42);
+const numberValue = numberContainer.getValue(); // numberValue is a number
+
+const stringContainer = new Container<string>('hello');
+const stringValue = stringContainer.getValue(); // stringValue is a string
+```
+<Callout type="tip">
+Practical tip: Use generics with classes to create reusable and type-safe components that can work with multiple types.
+</Callout>
+
+## Advanced Generic Techniques
+
+TypeScript generics provide several advanced techniques that can help you write more expressive and type-safe code. One such technique is using multiple type parameters:
+```typescript
+function pair<T, U>(first: T, second: U) {
+  return [first, second];
+}
+```
+This function takes two type parameters, `T` and `U`, and returns a tuple with the specified types:
+```typescript
+const numberStringPair = pair<number, string>(42, 'hello');
+// numberStringPair is a [number, string] tuple
+```
+Another advanced technique is using generic constraints:
+```typescript
+function getProperty<T, K extends keyof T>(obj: T, key: K) {
+  return obj[key];
+}
+```
+This function takes two type parameters, `T` and `K`, where `K` is constrained to be a key of `T`. This allows you to access properties of an object in a type-safe way:
+```typescript
+const person = { name: 'John', age: 30 };
+const name = getProperty(person, 'name'); // name is a string
+const age = getProperty(person, 'age'); // age is a number
+```
+<ImageCaption
+  src="https://images.unsplash.com/photo-1655635643532-fa9ba2648cbe?w=1200&q=80"
+  alt="TypeScript code on a screen"
+  caption="TypeScript provides several advanced generic techniques to help you write more expressive and type-safe code."
+/>
+
+## Conclusion
+
+TypeScript generics are a powerful feature that can help you write reusable and type-safe code. By understanding how to use generics, you can create more expressive and maintainable codebases. Remember to use type parameters, generic constraints, and multiple type parameters to write more advanced generic code.
+
+Start using TypeScript generics in your projects today and take your coding skills to the next level.
+TypeScript is the future of JavaScript development 🚀
