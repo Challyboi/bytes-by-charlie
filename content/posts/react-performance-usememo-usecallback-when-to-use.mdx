@@ -1,0 +1,202 @@
+---
+title: "React Performance: useMemo, useCallback, and When to Actually Use Them"
+date: "2026-06-29T09:30:00"
+description: "Most React devs either over-optimize with useMemo and useCallback or ignore them entirely. Here's the honest guide on when these hooks actually help."
+tags: ["React", "JavaScript", "Performance", "Frontend"]
+coverColor: "#10b981"
+---
+
+Most React tutorials show you *how* to use `useMemo` and `useCallback`. Almost none of them tell you *when* they actually matter - and when they're just noise cluttering your code.
+
+Let me fix that.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80"
+  alt="Code on a screen showing React component patterns"
+  caption="React performance tuning is less about clever tricks and more about knowing what React actually does."
+/>
+
+## What React already does for you
+
+Before reaching for any optimization hook, understand that React is already fast. On every render, React diffs the virtual DOM and only updates what changed in the real DOM. For most apps, this is more than enough.
+
+The problem shows up when:
+- You have expensive calculations that re-run on every render
+- You pass callbacks as props to child components that should not re-render
+- You have large lists where every item re-renders unnecessarily
+
+If none of those apply, stop reading and ship your feature.
+
+## useMemo - cache expensive calculations
+
+`useMemo` memoizes the *return value* of a function. React skips re-running the function if the dependencies haven't changed.
+
+```jsx
+// Without useMemo - runs on every render
+function ProductList({ products, searchQuery }) {
+  const filteredProducts = products
+    .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    .sort((a, b) => b.rating - a.rating);
+
+  return <ul>{filteredProducts.map(p => <li key={p.id}>{p.name}</li>)}</ul>;
+}
+
+// With useMemo - only recalculates when products or searchQuery change
+function ProductList({ products, searchQuery }) {
+  const filteredProducts = useMemo(() => {
+    return products
+      .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      .sort((a, b) => b.rating - a.rating);
+  }, [products, searchQuery]);
+
+  return <ul>{filteredProducts.map(p => <li key={p.id}>{p.name}</li>)}</ul>;
+}
+```
+
+<Callout type="fire">
+The rule: use useMemo when the calculation is genuinely expensive AND the component re-renders frequently. Filtering 10 items? Skip it. Processing 10,000 items? Add it.
+</Callout>
+
+Filtering and sorting arrays in the hundreds or thousands - that's where `useMemo` earns its place. For simple transforms like `.map()` over a small array, you're paying the overhead of memoization for zero gain.
+
+## useCallback - stable function references
+
+`useCallback` memoizes a *function itself* - it returns the same function reference between renders if the dependencies haven't changed.
+
+This matters because in JavaScript, two functions with identical code are not equal:
+
+```js
+const a = () => {};
+const b = () => {};
+console.log(a === b); // false
+```
+
+React uses reference equality to decide if props changed. If a parent re-renders and passes a new function reference to a child, the child re-renders too - even if the function does the same thing.
+
+```jsx
+// Without useCallback - new function on every render
+function Parent({ userId }) {
+  const handleUpdate = (data) => {
+    updateUser(userId, data);
+  };
+
+  return <ExpensiveChild onUpdate={handleUpdate} />;
+}
+
+// With useCallback - same function reference unless userId changes
+function Parent({ userId }) {
+  const handleUpdate = useCallback((data) => {
+    updateUser(userId, data);
+  }, [userId]);
+
+  return <ExpensiveChild onUpdate={handleUpdate} />;
+}
+```
+
+<Callout type="info">
+useCallback only pays off if the child component is wrapped in React.memo (or is a PureComponent). Without that, React re-renders the child regardless of whether the props reference changed.
+</Callout>
+
+## React.memo - the missing piece
+
+`useCallback` on its own does nothing for rendering. It's the combination of `useCallback` on the parent AND `React.memo` on the child that actually prevents unnecessary renders.
+
+```jsx
+const ExpensiveChild = React.memo(function ExpensiveChild({ onUpdate, data }) {
+  // This only re-renders when onUpdate or data reference changes
+  return (
+    <div>
+      {/* expensive rendering logic */}
+    </div>
+  );
+});
+```
+
+`React.memo` does a shallow comparison of props. If nothing changed, React skips re-rendering the component entirely.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&q=80"
+  alt="Developer analyzing code performance on a monitor"
+  caption="Performance optimization without profiling is guesswork. Always measure first."
+/>
+
+## A real-world example that combines all three
+
+Here's a dashboard filter component that actually benefits from all three optimizations:
+
+```jsx
+const FilterTag = React.memo(function FilterTag({ label, active, onToggle }) {
+  return (
+    <button
+      className={active ? 'tag active' : 'tag'}
+      onClick={() => onToggle(label)}
+    >
+      {label}
+    </button>
+  );
+});
+
+function Dashboard({ items }) {
+  const [activeFilters, setActiveFilters] = useState([]);
+
+  const handleToggle = useCallback((label) => {
+    setActiveFilters(prev =>
+      prev.includes(label)
+        ? prev.filter(f => f !== label)
+        : [...prev, label]
+    );
+  }, []); // no dependencies - uses functional updater
+
+  const filteredItems = useMemo(() => {
+    if (activeFilters.length === 0) return items;
+    return items.filter(item =>
+      activeFilters.every(f => item.tags.includes(f))
+    );
+  }, [items, activeFilters]);
+
+  return (
+    <div>
+      <div className="filters">
+        {['React', 'TypeScript', 'Node', 'CSS'].map(tag => (
+          <FilterTag
+            key={tag}
+            label={tag}
+            active={activeFilters.includes(tag)}
+            onToggle={handleToggle}
+          />
+        ))}
+      </div>
+      <ItemList items={filteredItems} />
+    </div>
+  );
+}
+```
+
+Each filter tag only re-renders when its own `active` state changes. The filtered list only recalculates when filters or items change. This is the right level of optimization for a real dashboard with many items.
+
+<Callout type="warning">
+Watch out for objects and arrays as dependencies. `[userId, { role: 'admin' }]` will always re-run because the object is a new reference each render. Extract primitives or use useMemo for the dependency itself.
+</Callout>
+
+## How to decide: a quick mental model
+
+Before adding any optimization hook, ask:
+
+1. **Does this calculation take noticeable time?** Open DevTools, profile it. If it's under 1ms, skip it.
+2. **Does this component re-render frequently?** If a component renders once on mount and rarely again, memoization adds code with zero benefit.
+3. **Is this callback passed to a memoized child?** If the child isn't wrapped in React.memo, useCallback does nothing for renders.
+4. **Are you in a tight loop or virtualized list?** This is where the overhead genuinely compounds.
+
+<Callout type="tip">
+Install the React DevTools browser extension and use the Profiler tab. It shows you exactly which components rendered, why they rendered, and how long each one took. Optimize what the profiler shows you, not what you guess might be slow.
+</Callout>
+
+## The real lesson
+
+The biggest React performance mistake isn't forgetting to use `useMemo` - it's adding it everywhere as a reflex. Every `useMemo` and `useCallback` adds a dependency array to maintain, a mental model to carry, and a small overhead from the memoization itself.
+
+React is fast. Measure first, optimize second. Use these hooks for the specific cases they're built for: expensive calculations, stable callbacks to memoized children, and large lists where every unnecessary render adds up.
+
+<YoutubeEmbed id="o-alRbk_zP0" title="useMemo and useCallback explained - Web Dev Simplified" />
+
+Know when not to optimize - that's the real skill.
