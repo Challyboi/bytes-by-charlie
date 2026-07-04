@@ -1,0 +1,83 @@
+---
+title: "What Actually Gets Developers Promoted (It's Not More Code)"
+date: "2026-07-04T09:15:00"
+description: "Writing more code doesn't move you up a level. Here's what actually gets noticed in promotion cycles, and how to start tracking it before review season."
+tags: ["career", "developer-advice", "productivity"]
+coverColor: "#3b82f6"
+---
+
+Every mid-level developer I know has the same theory about promotion: ship more tickets, close more PRs, stay later than everyone else. Then review season comes around and they get the same rating as last year. The problem isn't effort. The problem is that raw output was never the thing being measured.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80"
+  alt="Two developers reviewing a laptop screen together in an office"
+  caption="Promotion conversations happen in rooms you're not in. Your job is to leave evidence behind."
+/>
+
+## Visibility beats volume
+
+A staff engineer I worked with once told me: "Nobody gets promoted for the PR they merged alone at 11pm. They get promoted for the outage they prevented in front of five other engineers." That's blunt, but it's accurate. Promotion committees don't read your commit log. They read what your manager remembers, what got mentioned in a Slack thread, what showed up in a postmortem with your name attached.
+
+This means the unglamorous stuff counts more than you'd think:
+
+- Writing the design doc nobody wanted to write
+- Being the person who reviews PRs thoroughly instead of rubber-stamping
+- Explaining a tricky bug in a way that non-engineers understood
+- Mentoring the new hire without being asked
+
+<Callout type="fire">
+None of this shows up in your GitHub contribution graph. If you're only tracking commits, you're measuring the wrong thing.
+</Callout>
+
+## Track impact, not activity
+
+Most developers wait until performance review week to remember what they did all year. By then half of it is gone. The fix is boring: keep a running log.
+
+I use a simple markdown file, updated weekly, with one line per notable thing:
+
+```markdown
+## Impact Log - 2026
+
+### Q2
+- 2026-04-12: Cut checkout API p95 latency from 800ms to 210ms
+  (redis cache in front of pricing lookup). Reduced support tickets
+  about slow checkout by ~30%.
+- 2026-05-03: Wrote the incident postmortem for the payment webhook
+  outage. Proposed the retry-with-backoff fix that shipped in v2.4.
+- 2026-05-20: Onboarded new hire Priya, paired for two weeks on the
+  billing service. She shipped her first PR solo by week 3.
+```
+
+Notice the pattern: what changed, and what it meant for someone else, a user, a teammate, the business. "Fixed bug in payment service" is activity. "Reduced checkout latency by 74%, cutting support load" is impact. The second one is what gets quoted in a promotion packet.
+
+<Callout type="tip">
+Set a recurring 10-minute calendar reminder every Friday to update this file. If you wait for review season, you'll remember the outages and forget the wins.
+</Callout>
+
+## Scope is the actual lever
+
+Here's the part people miss: promotion criteria almost never say "write better code." They say things like "operates with minimal guidance," "influences work beyond their immediate team," or "identifies problems before being asked to." That's a scope question, not a skill question.
+
+The move that actually shifts your level is picking up work that wasn't assigned to you because you noticed it needed doing. Not extra tickets from the backlog, structural stuff: the flaky test suite nobody owns, the onboarding doc that's three years out of date, the alerting gap that let an incident run for two hours before anyone noticed.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&q=80"
+  alt="A whiteboard covered in sticky notes and a roadmap sketch"
+  caption="Scope isn't about doing more tickets. It's about deciding what gets worked on."
+/>
+
+Doing that once is a nice story. Doing it consistently is a pattern your manager can point to and say "this person operates a level above where they're leveled." That sentence is worth more than a quarter of extra story points.
+
+## Talk about it before the review, not during it
+
+The single biggest mistake I see is treating the performance review as the first conversation about promotion. It shouldn't be. If your manager is surprised by your case in the review, you've already lost the cycle, because most calibration decisions get made in meetings that happen before the written review is even drafted.
+
+Instead, bring your impact log to 1:1s throughout the year. Not as a brag session, as a checkpoint: "here's what I worked on, here's what I think it moved, does this match what you're seeing?" That gives your manager time to build your case with other people in the room, and gives you time to redirect effort if what you think matters isn't actually what's being valued.
+
+<YoutubeEmbed id="c0vBJDx6NVI" title="How to actually get promoted as a software engineer" />
+
+## The short version
+
+Writing code is table stakes. What gets you promoted is the stuff that's harder to automate: judgment about what matters, visibility into your own impact, and a track record of taking on scope before someone hands it to you. Start the log today. Review season is a bad time to start remembering.
+
+Do the work. Then make sure someone besides you knows you did it.
