@@ -1,0 +1,108 @@
+---
+title: "Claude Code Hooks and Subagents: Automate Your Dev Workflow"
+date: "2026-07-12T09:15:00"
+description: "Hooks and subagents turn Claude Code from a chat window into a programmable part of your toolchain. Here's how to actually use both."
+tags: ["claude-code", "ai-automation", "developer-tools"]
+coverColor: "#8b5cf6"
+---
+
+Most people use Claude Code like a smarter autocomplete. You type a request, it edits some files, you review the diff, done. That's fine, but it's leaving most of the tool on the table.
+
+The two features that change how Claude Code fits into your day are hooks and subagents. Hooks let you run your own shell commands at specific points in Claude's lifecycle. Subagents let you delegate a chunk of work to a separate context window with its own tools and instructions. Once you wire these up, Claude Code stops being a chat interface and starts behaving like a CI pipeline that happens to think.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80"
+  alt="Terminal window with code and automation scripts"
+  caption="Hooks and subagents are the difference between prompting Claude and building a workflow around it."
+/>
+
+## What hooks actually are
+
+A hook is a shell command that fires on an event: before a tool runs, after a tool runs, when Claude stops, when a file is edited. You configure them in `settings.json`, and they're pure automation, not another LLM call.
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$(date): running bash command\" >> ~/.claude/audit.log"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+That's a trivial example, but the pattern generalizes fast. A few hooks I actually run in production repos:
+
+- **PostToolUse on Edit/Write**: run `prettier --write` on the touched file so formatting never drifts, regardless of what Claude generates.
+- **PreToolUse on Bash**: block anything matching `rm -rf` or `git push --force` unless it's explicitly whitelisted, as a hard safety net beyond the permission prompt.
+- **Stop hook**: run the test suite and append a pass/fail line to a log, so you have a record of whether the working tree was green when Claude finished.
+
+<Callout type="fire">
+Hooks run outside the model's control. Claude can't talk its way around a hook that blocks a command, which makes them the right place to enforce anything you consider non-negotiable, like "never touch the migrations folder without a human review."
+</Callout>
+
+## Where hooks earn their keep
+
+The failure mode hooks solve is drift. You ask Claude for a bug fix, it makes a reasonable edit, and three files down the line the formatting is inconsistent, or a debug `console.log` slips into the diff. A hook catches that mechanically, every time, without you having to remember to check.
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "grep -l 'console.log' \"$CLAUDE_TOOL_INPUT_FILE_PATH\" && echo 'WARNING: console.log left in file' || true"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Small script, but it means you're not the linter anymore. The hook is.
+
+## What subagents are for
+
+A subagent is a separate Claude instance with its own system prompt, its own tool access, and its own context window. You invoke it from your main session, it does its work in isolation, and it reports back a single result. The main conversation never sees its intermediate tool calls, which is the point: it keeps your primary context clean.
+
+The obvious use case is research. If you need to understand how authentication flows through a large codebase before making a change, that's dozens of file reads and greps you don't want cluttering the conversation you're actually trying to have. Hand it to a subagent:
+
+<Callout type="info">
+Claude Code ships a few specialized agent types out of the box, including a read-only "Explore" agent for codebase search. Using it instead of a general-purpose agent for pure lookups is faster and cheaper, since it can't accidentally start editing files.
+</Callout>
+
+The second use case is parallelism. If you have three independent, unrelated investigations, spin up three subagents in the same turn instead of doing them sequentially. They don't share state, so there's no coordination overhead, just three answers coming back faster than one linear pass.
+
+## A workflow that combines both
+
+Here's a pattern I use for anything touching a shared library with downstream consumers:
+
+1. A subagent explores the codebase and reports back every call site that would be affected by the change.
+2. The main session makes the edit based on that report.
+3. A PostToolUse hook runs the type checker and appends results to a log file.
+4. A Stop hook runs the full test suite before the session is considered done.
+
+None of this requires babysitting. The subagent keeps exploration out of your main context, the hooks enforce the checks you'd otherwise do by hand, and you only step in when something actually needs a judgment call.
+
+<YoutubeEmbed id="8XL9wr7EhBw" title="Claude Code: Advanced workflows with hooks and subagents" />
+
+## Getting started without overbuilding it
+
+You don't need ten hooks and five custom agents on day one. Start with one hook that solves a real annoyance, like auto-formatting on save or blocking a specific destructive command. Add a subagent only when you notice yourself repeatedly asking Claude to "go look into X and tell me what you find" as a side quest inside a bigger task.
+
+<Callout type="tip">
+Check hook and subagent configs into your repo under `.claude/`, not your global config. Team members inherit the same guardrails, and the automation travels with the codebase instead of living only on your machine.
+</Callout>
+
+The tools are simple. Shell commands and scoped instructions, nothing exotic. What makes them worth setting up is that they turn "remember to check X" into "X is checked, automatically, every single time." That's the whole trick to getting more out of an AI coding tool: stop trusting yourself to remember the boring parts, and make the system enforce them instead.
