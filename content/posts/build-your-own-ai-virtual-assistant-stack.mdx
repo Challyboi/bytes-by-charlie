@@ -1,0 +1,111 @@
+---
+title: "Build Your Own AI Virtual Assistant Stack (Without Hiring One)"
+date: "2026-07-13T09:15:00"
+description: "Skip the VA hire. Here's the exact stack of Claude, n8n, and a few glue scripts I use to triage email, manage my calendar, and clear busywork automatically."
+tags: ["ai automation", "productivity", "virtual assistant"]
+coverColor: "#ec4899"
+---
+
+Everyone in the indie hacker and freelancer world eventually hits the same wall: you're spending more time managing your inbox, calendar, and admin than doing the work that actually pays. The default advice is "hire a VA." That works, but it's slow to set up, costs real money every month, and still needs you to write instructions, review output, and manage a person.
+
+I went a different route. I built a small stack of automations that do about 80% of what I'd hand to a human assistant, and it cost me a weekend instead of a hiring process.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?w=1200&q=80"
+  alt="A workflow automation dashboard with connected nodes on a screen"
+  caption="The goal isn't to automate everything - it's to automate the repetitive decisions that don't need your judgment."
+/>
+
+## The three jobs a VA actually does
+
+Strip away the job title and a good assistant is doing three things:
+
+1. **Triage** - deciding what's urgent, what's noise, and what can wait
+2. **Routing** - getting the right information to the right place (calendar, task list, CRM)
+3. **Drafting** - producing a first pass of replies, summaries, or documents for you to approve
+
+None of these require a human specifically. They require judgment applied consistently, which is exactly what an LLM with the right context is good at.
+
+<Callout type="info">
+This isn't about replacing a human VA if you already have one and it's working. It's for the solo developer or freelancer who can't justify the cost yet but is drowning in admin.
+</Callout>
+
+## The stack
+
+Here's what I'm actually running:
+
+- **Claude** (via API) as the reasoning layer - reads, classifies, drafts
+- **n8n** as the orchestration layer - watches triggers, calls Claude, routes output
+- **Gmail/Calendar API** as the data source
+- **A single Notion database** as the task inbox everything lands in
+
+The whole thing is maybe 200 lines of workflow config and one system prompt. No custom backend, no hosting bill beyond a small VPS for n8n.
+
+### Step 1: Email triage
+
+Every incoming email hits an n8n webhook, gets passed to Claude with a classification prompt, and comes back tagged.
+
+```javascript
+// n8n Function node - build the classification prompt
+const email = $input.item.json;
+
+return {
+  json: {
+    prompt: `Classify this email into exactly one category:
+URGENT_REPLY, SCHEDULE_REQUEST, NEWSLETTER, INVOICE, FYI_ONLY.
+
+Subject: ${email.subject}
+From: ${email.from}
+Body: ${email.body.slice(0, 1500)}
+
+Respond with only the category name.`
+  }
+};
+```
+
+The category routes the email to a different n8n branch: urgent replies get a draft response written and dropped into a "needs review" Notion page, schedule requests get parsed for a date/time and checked against your calendar, newsletters get archived, invoices get logged to a spreadsheet.
+
+<Callout type="fire">
+The unlock isn't the AI call itself, it's the branching logic after it. Classification is cheap. What you do with the classification is the actual product.
+</Callout>
+
+### Step 2: Calendar requests get handled without you
+
+When someone emails asking "does Tuesday work?", the workflow pulls your calendar availability, has Claude draft three time options that don't conflict, and sends a reply for your approval (or auto-sends, if you trust it enough).
+
+```javascript
+const prompt = `You have these open slots this week: ${JSON.stringify(freeSlots)}.
+The person asked: "${requestText}"
+Draft a short, friendly reply offering 2-3 specific times.
+Keep it under 60 words. No corporate tone.`;
+```
+
+This alone saves the back-and-forth that used to eat 20 minutes a day.
+
+<YoutubeEmbed id="1MwSoB0gnM4" title="n8n automation walkthrough" />
+
+### Step 3: Weekly digest instead of constant checking
+
+Instead of getting pinged for every low-priority item, everything that isn't urgent gets batched into a Friday digest that Claude writes by summarizing the week's Notion inbox. One email, five minutes to read, and I'm caught up.
+
+<ImageCaption
+  src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&q=80"
+  alt="A weekly planner and notebook on a desk"
+  caption="Batching low-priority decisions into one weekly review beats getting interrupted by them daily."
+/>
+
+## Where I still keep a human in the loop
+
+I don't auto-send replies to anything client-facing without approval. I don't let the system make financial decisions. And I review the classification accuracy every couple of weeks because prompts drift as your email patterns change.
+
+<Callout type="warning">
+Don't wire this up to auto-send on day one. Run it in "draft only" mode for at least two weeks so you can catch misclassifications before they become an embarrassing email that went out on its own.
+</Callout>
+
+## What this actually replaces
+
+It's not a full VA. It doesn't book travel, it doesn't do research-heavy tasks, and it definitely doesn't handle anything that requires relationship context you haven't given it. But it eats the repetitive 80% - the emails, the scheduling, the "did I follow up on this" questions - and that's the part that actually burns out solo operators.
+
+If you're a developer already comfortable with APIs and workflow tools, you can build this in a weekend. If admin work is the thing standing between you and shipping, that's a pretty good trade.
+
+Start small: automate one annoying, repetitive task this week. Everything else can wait.
